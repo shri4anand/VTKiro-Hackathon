@@ -207,23 +207,23 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - _Requirements: 7.1, 7.2, 7.6_
 
 - [ ] 10. Frontend FeedPanel with auto-polling
-  - [ ] 10.1 Build `FeedPanel` and `FeedItem` components
+  - [x] 10.1 Build `FeedPanel` and `FeedItem` components
     - Each `FeedItem` shows `title`, `source`, `publishedAt`, and `SimplifiedText` for `activeLevel`
     - `FeedStatusBar` shows polling indicator when `isPolling` is true and error banner on failure
     - _Requirements: 7.3, 7.5, 7.6_
 
-  - [ ] 10.2 Implement `useFeedPoller` hook
+  - [x] 10.2 Implement `useFeedPoller` hook
     - `setInterval` every 300,000 ms; dispatch `GET /api/feed` on mount and each tick
     - On success: prepend new items to feed list, preserve existing items
     - On failure: retain existing items, set `feedError`, show non-blocking banner (auto-dismiss after 10 s)
     - Clear interval on unmount
     - _Requirements: 7.1, 7.4, 7.6_
 
-  - [ ] 10.3 Wire `activeLevel` from shared state into FeedPanel
+  - [x] 10.3 Wire `activeLevel` from shared state into FeedPanel
     - When user changes `ReadingLevelSelector`, all `FeedItem` components re-render to show the correct variant
     - _Requirements: 7.3, 7.7_
 
-  - [ ] 10.4 Write property test for polling interval (Property 14)
+  - [x] 10.4 Write property test for polling interval (Property 14)
     - **Property 14: Feed polling fires on the correct interval**
     - **Validates: Requirements 7.1**
     - `// Feature: crisis-text-simplifier, Property 14: Feed polling fires on the correct interval`
