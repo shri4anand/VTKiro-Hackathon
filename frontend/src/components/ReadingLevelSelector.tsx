@@ -1,9 +1,9 @@
 import { ReadingLevel } from "../types";
 
 const LEVELS: { code: ReadingLevel; label: string }[] = [
-  { code: "grade3", label: "Grade 3" },
-  { code: "grade6", label: "Grade 6" },
-  { code: "grade9", label: "Grade 9" },
+  { code: "grade3", label: "Beginner" },
+  { code: "grade6", label: "Intermediate" },
+  { code: "grade9", label: "Comprehensive" },
 ];
 
 interface ReadingLevelSelectorProps {

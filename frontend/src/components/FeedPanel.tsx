@@ -10,7 +10,6 @@ export function FeedPanel() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    // Initial poll on mount
     const pollFeed = async () => {
       dispatch({ type: "SET_IS_POLLING", payload: true });
       try {
@@ -49,27 +48,21 @@ export function FeedPanel() {
       }
     };
 
-    // Poll immediately on mount
     pollFeed();
-
-    // Set up interval for subsequent polls
     const intervalId = setInterval(pollFeed, POLL_INTERVAL);
-
     return () => clearInterval(intervalId);
   }, [dispatch, state.feed.items]);
 
   return (
-    <section className="mt-8" aria-label="Crisis news feed">
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">Crisis Feed</h2>
+    <aside className="flex-[1.2] bg-surface-container-low border-l border-surface-variant flex flex-col min-w-[400px] max-h-screen" aria-label="Crisis news feed">
+      <div className="p-6 border-b border-surface-variant flex items-center justify-between bg-surface-container-low/80 backdrop-blur-md sticky top-0 z-10">
+        <h2 className="text-on-surface text-xl font-black tracking-tight">Live Crisis Feed</h2>
+        <FeedStatusBar isPolling={state.feed.isPolling} feedError={state.feed.feedError} />
+      </div>
 
-      <FeedStatusBar
-        isPolling={state.feed.isPolling}
-        feedError={state.feed.feedError}
-      />
-
-      <div className="mt-6 space-y-4">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
         {state.feed.items.length === 0 ? (
-          <div className="text-center py-8 text-gray-600">
+          <div className="text-center py-8 text-on-surface-variant">
             <p>No articles available yet. Check back soon.</p>
           </div>
         ) : (
@@ -82,6 +75,6 @@ export function FeedPanel() {
           ))
         )}
       </div>
-    </section>
+    </aside>
   );
 }

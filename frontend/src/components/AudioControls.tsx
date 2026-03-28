@@ -18,37 +18,32 @@ export function AudioControls({ variant, language }: AudioControlsProps) {
   }
 
   return (
-    <div className="flex items-center gap-2 mt-3">
-      <button
-        onClick={() => play(variant.text, language, variant.level)}
-        disabled={isPlaying}
-        aria-label={`Play audio for ${variant.level} reading level`}
-        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm font-medium transition-colors"
-      >
-        {isPlaying ? "Playing..." : "Play"}
-      </button>
-
-      {isPlaying && (
+    <div className="flex items-center gap-2">
+      {isPlaying ? (
         <button
           onClick={stop}
           aria-label={`Stop audio for ${variant.level} reading level`}
-          className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm font-medium transition-colors"
+          className="p-3 bg-surface-container rounded-xl text-on-surface hover:bg-primary hover:text-on-primary transition-all group/btn"
         >
-          Stop
+          <span className="material-symbols-outlined">volume_up</span>
+        </button>
+      ) : (
+        <button
+          onClick={() => play(variant.text, language, variant.level)}
+          aria-label={`Play audio for ${variant.level} reading level`}
+          className="flex items-center gap-2 px-4 py-2 bg-surface-container rounded-xl text-on-surface font-bold text-sm hover:bg-surface-variant transition-all"
+        >
+          <span className="material-symbols-outlined text-[20px]">play_circle</span>
+          Listen
         </button>
       )}
-
-      {isPlaying && (
-        <span className="text-sm text-blue-600 font-medium animate-pulse">
-          ♪ Playing
-        </span>
-      )}
-
-      {error && (
-        <span className="text-sm text-red-600">
-          {error}
-        </span>
-      )}
+      <button 
+        onClick={() => navigator.clipboard.writeText(variant.text)}
+        className="p-2.5 bg-surface-container rounded-xl text-on-surface hover:bg-surface-variant transition-all"
+        aria-label="Copy text"
+      >
+        <span className="material-symbols-outlined text-[20px]">content_copy</span>
+      </button>
     </div>
   );
 }

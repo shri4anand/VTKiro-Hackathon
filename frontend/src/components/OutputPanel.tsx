@@ -10,34 +10,36 @@ export function OutputPanel() {
 
   if (state.status === "loading") {
     return (
-      <div className="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-200">
-        <p className="text-blue-800 font-medium">Simplifying text...</p>
+      <div className="space-y-8 pb-12">
+        <h2 className="text-on-surface text-2xl font-bold border-l-4 border-primary pl-4">Simplicity Levels</h2>
+        <div className="bg-surface-container-low rounded-xl p-8 animate-pulse">
+          <p className="text-on-surface-variant">Simplifying text...</p>
+        </div>
       </div>
     );
   }
 
   if (state.status === "error" && state.error) {
     return (
-      <div className="mt-8 p-6 bg-red-50 rounded-lg border border-red-200">
-        <p className="text-red-800 font-medium mb-3">{state.error.error}</p>
-        {(state.error.code === "LLM_UNAVAILABLE" || state.error.code === "TIMEOUT") && (
-          <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium">
-            Retry
-          </button>
-        )}
+      <div className="space-y-8 pb-12">
+        <h2 className="text-on-surface text-2xl font-bold border-l-4 border-error pl-4">Error</h2>
+        <div className="bg-error-container rounded-xl p-8">
+          <p className="text-on-error-container font-medium">{state.error.error}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="mt-8">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Simplified Versions</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {state.variants.map((variant) => (
+    <div className="space-y-8 pb-12">
+      <h2 className="text-on-surface text-2xl font-bold border-l-4 border-primary pl-4">Simplicity Levels</h2>
+      <div className="space-y-6">
+        {state.variants.map((variant, index) => (
           <SimplifiedCard
             key={variant.level}
             variant={variant}
             language={state.language}
+            isFirst={index === 0}
           />
         ))}
       </div>
