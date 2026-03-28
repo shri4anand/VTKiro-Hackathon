@@ -124,13 +124,13 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 12: ARIA live region reflects loading and success states`
     - Generate state transitions; assert ARIA live region is non-empty on loading/success
 
-  - [ ] 6.9 Write property test for ARIA labels (Property 11)
+  - [x] 6.9 Write property test for ARIA labels (Property 11)
     - **Property 11: ARIA labels on all interactive controls**
     - **Validates: Requirements 5.3**
     - `// Feature: crisis-text-simplifier, Property 11: ARIA labels on all interactive controls`
     - Generate app states; assert all interactive controls have non-empty `aria-label`
 
-  - [ ] 6.10 Write unit tests for rendering and error handling
+  - [x] 6.10 Write unit tests for rendering and error handling
     - Known alert text → correct output structure; LLM unavailable → retry button; timeout → loading cleared; malformed → generic message
     - Language toggle change → new API call with correct language param
     - _Requirements: 2.2, 3.4, 6.1, 6.2, 6.4_
