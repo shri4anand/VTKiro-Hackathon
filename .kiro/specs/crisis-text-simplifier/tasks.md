@@ -104,7 +104,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 4: All three variants are rendered simultaneously`
     - Generate valid responses; assert all 3 cards present in output panel
 
-  - [ ] 6.5 Wire language toggle to re-trigger `/api/simplify` with new language
+  - [x] 6.5 Wire language toggle to re-trigger `/api/simplify` with new language
     - Language change dispatches new request; all three cards update without manual resubmit
     - _Requirements: 3.2, 3.4, 3.5_
 
