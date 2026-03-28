@@ -50,8 +50,8 @@ describe("AlertInputPanel", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Text exceeds 5,000 character limit.");
   });
 
-  it("disables submit button when text is over 5000 chars", () => {
-    setup({ inputText: "a".repeat(5001) });
+  it("disables submit button when text is over 10000 chars", () => {
+    setup({ inputText: "a".repeat(10001) });
     expect(screen.getByRole("button", { name: "Simplify alert text" })).toBeDisabled();
   });
 
@@ -84,8 +84,8 @@ describe("AlertInputPanel", () => {
     expect(onChange).toHaveBeenCalled();
   });
 
-  it("accepts exactly 5000 characters (submit enabled)", () => {
-    setup({ inputText: "a".repeat(5000) });
+  it("accepts exactly 10000 characters (submit enabled)", () => {
+    setup({ inputText: "a".repeat(10000) });
     expect(screen.getByRole("button", { name: "Simplify alert text" })).not.toBeDisabled();
   });
 });

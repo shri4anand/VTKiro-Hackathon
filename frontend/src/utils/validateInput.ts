@@ -4,7 +4,7 @@ export function validateInput(text: string): ValidationResult {
   if (text.length === 0) {
     return { valid: false, reason: "EMPTY" };
   }
-  if (text.length > 5000) {
+  if (text.length > 10000) {
     return { valid: false, reason: "TOO_LONG" };
   }
   return { valid: true };

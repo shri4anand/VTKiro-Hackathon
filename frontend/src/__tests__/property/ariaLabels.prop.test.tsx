@@ -272,7 +272,7 @@ describe("ARIA Labels - Property 11: ARIA labels on all interactive controls", (
     // the submit button and textarea should have non-empty aria-label
     fc.assert(
       fc.property(
-        fc.string({ minLength: 0, maxLength: 5000 }),
+        fc.string({ minLength: 0, maxLength: 10000 }),
         (inputText) => {
           const { container, unmount } = render(
             <AlertInputPanel

@@ -86,22 +86,22 @@ describe("/api/simplify error paths", () => {
     });
   });
 
-  describe("VALIDATION_ERROR - text exceeds 5000 chars", () => {
-    it("should return 400 with VALIDATION_ERROR code when text exceeds 5000 chars", async () => {
-      const longText = "a".repeat(5001);
+  describe("VALIDATION_ERROR - text exceeds 10000 chars", () => {
+    it("should return 400 with VALIDATION_ERROR code when text exceeds 10000 chars", async () => {
+      const longText = "a".repeat(10001);
       const response = await request(app)
         .post("/api/simplify")
         .send({ text: longText, language: "en" });
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
-        error: "Text exceeds 5,000 character limit.",
+        error: "Text exceeds 10,000 character limit.",
         code: "VALIDATION_ERROR",
       });
     });
 
-    it("should accept text with exactly 5000 chars", async () => {
-      const exactText = "a".repeat(5000);
+    it("should accept text with exactly 10000 chars", async () => {
+      const exactText = "a".repeat(10000);
       mockCallLLM.mockResolvedValue({
         success: true,
         data: { grade3: "test", grade6: "test", grade9: "test" },

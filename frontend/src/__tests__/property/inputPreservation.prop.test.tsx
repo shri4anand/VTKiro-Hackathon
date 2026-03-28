@@ -28,7 +28,7 @@ describe("Property 13: Alert input is preserved on any error", () => {
 
   it("should preserve inputText when LLM_UNAVAILABLE error occurs", async () => {
     await fc.assert(
-      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 5000 }), async (inputText) => {
+      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 10000 }), async (inputText) => {
         // Setup
         (global.fetch as any).mockRejectedValueOnce(new Error("Network error"));
 
@@ -55,7 +55,7 @@ describe("Property 13: Alert input is preserved on any error", () => {
 
   it("should preserve inputText when TIMEOUT error occurs", async () => {
     await fc.assert(
-      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 5000 }), async (inputText) => {
+      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 10000 }), async (inputText) => {
         // Setup
         const abortError = new Error("Aborted");
         abortError.name = "AbortError";
@@ -78,7 +78,7 @@ describe("Property 13: Alert input is preserved on any error", () => {
 
   it("should preserve inputText when VALIDATION_ERROR occurs", async () => {
     await fc.assert(
-      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 5000 }), async (inputText) => {
+      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 10000 }), async (inputText) => {
         // Setup
         const mockError: AppError = {
           error: "Invalid input",
@@ -107,7 +107,7 @@ describe("Property 13: Alert input is preserved on any error", () => {
 
   it("should preserve inputText when MALFORMED_RESPONSE error occurs", async () => {
     await fc.assert(
-      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 5000 }), async (inputText) => {
+      fc.asyncProperty(fc.string({ minLength: 1, maxLength: 10000 }), async (inputText) => {
         // Setup
         const mockError: AppError = {
           error: "Malformed response from server",
@@ -178,7 +178,7 @@ describe("Property 13: Alert input is preserved on any error", () => {
 
     await fc.assert(
       fc.asyncProperty(
-        fc.string({ minLength: 1, maxLength: 5000 }),
+        fc.string({ minLength: 1, maxLength: 10000 }),
         fc.integer({ min: 0, max: errorTypes.length - 1 }),
         async (inputText, errorTypeIndex) => {
           // Setup

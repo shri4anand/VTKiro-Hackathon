@@ -159,7 +159,7 @@ describe("Property 2: Valid input is forwarded to the Simplifier", () => {
 
     fc.assert(
       fc.property(
-        fc.string({ minLength: 1, maxLength: 5000 }).filter((s) => s.trim().length > 0),
+        fc.string({ minLength: 1, maxLength: 10000 }).filter((s) => s.trim().length > 0),
         fc.constantFrom("en", "es", "fr", "zh", "ar", "pt"),
         (inputText, language) => {
           // Reset mock for each iteration
