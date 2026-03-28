@@ -23,6 +23,7 @@ This guide walks you through deploying the Crisis Text Simplifier to AWS using A
    ```bash
    npm install -g @aws-amplify/cli
    amplify configure
+   
    ```
 
 ## Step 1: Deploy Backend to Elastic Beanstalk
