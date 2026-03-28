@@ -108,7 +108,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Language change dispatches new request; all three cards update without manual resubmit
     - _Requirements: 3.2, 3.4, 3.5_
 
-  - [ ] 6.6 Write property test for language update (Property 6)
+  - [x] 6.6 Write property test for language update (Property 6)
     - **Property 6: Language selection updates all displayed variants**
     - **Validates: Requirements 3.2, 3.4**
     - `// Feature: crisis-text-simplifier, Property 6: Language selection updates all displayed variants`
