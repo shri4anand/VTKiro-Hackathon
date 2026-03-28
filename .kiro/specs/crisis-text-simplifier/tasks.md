@@ -177,32 +177,32 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
 - [x] 8. Checkpoint — Ensure all frontend simplify and TTS tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 9. Backend GET /api/feed endpoint
-  - [ ] 9.1 Implement NewsAPI integration
+- [x] 9. Backend GET /api/feed endpoint
+  - [x] 9.1 Implement NewsAPI integration
     - Fetch up to 20 articles matching `emergency OR crisis OR disaster OR evacuation` from last 24 hours
     - Filter out articles with body text < 50 chars; deduplicate by article URL hash (`id`)
     - Store `NEWS_API_KEY` in environment variable
     - _Requirements: 7.1, 7.2_
 
-  - [ ] 9.2 Implement feed simplification pipeline
+  - [x] 9.2 Implement feed simplification pipeline
     - For each article, call LLM simplifier (reuse `/api/simplify` logic) to produce three variants with FK scores
     - Return array of `FeedItem` objects with `id`, `title`, `source`, `publishedAt`, `variants`, and top-level `fetchedAt`
     - Return `NEWS_SOURCE_UNAVAILABLE`, `TIMEOUT`, or `MALFORMED_RESPONSE` on failure
     - _Requirements: 7.2, 7.8_
 
-  - [ ] 9.3 Write property test for per-article simplifier calls (Property 15)
+  - [x] 9.3 Write property test for per-article simplifier calls (Property 15)
     - **Property 15: Each retrieved article is passed to the Simplifier**
     - **Validates: Requirements 7.2**
     - `// Feature: crisis-text-simplifier, Property 15: Each retrieved article is passed to the Simplifier`
     - Generate article batches; assert Simplifier called exactly once per article with correct text
 
-  - [ ] 9.4 Write property test for Feed_Item FK score bounds (Property 20)
+  - [x] 9.4 Write property test for Feed_Item FK score bounds (Property 20)
     - **Property 20: Feed_Item FK scores satisfy reading level bounds**
     - **Validates: Requirements 7.8**
     - `// Feature: crisis-text-simplifier, Property 20: Feed_Item FK scores satisfy reading level bounds`
     - Generate Feed_Items via feed pipeline; assert all variant fkScores satisfy level-specific bounds
 
-  - [ ] 9.5 Write unit tests for /api/feed
+  - [x] 9.5 Write unit tests for /api/feed
     - Successful fetch returns array of FeedItems; NewsAPI unavailable → `NEWS_SOURCE_UNAVAILABLE`; timeout → `TIMEOUT`; malformed → `MALFORMED_RESPONSE`
     - _Requirements: 7.1, 7.2, 7.6_
 

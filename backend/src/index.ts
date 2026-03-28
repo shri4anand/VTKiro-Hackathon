@@ -4,6 +4,7 @@ import cors from "cors";
 import { validateSimplifyRequest } from "./validation";
 import { callLLM } from "./llm";
 import { scoreVariants } from "./scorer";
+import { getFeed } from "./feed";
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -11,7 +12,17 @@ const PORT = process.env.PORT ?? 3001;
 app.use(cors());
 app.use(express.json());
 
-// GET  /api/feed — to be implemented in a later task
+app.get("/api/feed", async (_req, res) => {
+  const result = await getFeed();
+
+  if (!result.success) {
+    const statusCode = result.error.code === "TIMEOUT" ? 504 : 502;
+    res.status(statusCode).json(result.error);
+    return;
+  }
+
+  res.json(result.data);
+});
 
 app.post("/api/simplify", async (req, res) => {
   const result = validateSimplifyRequest(req.body);
