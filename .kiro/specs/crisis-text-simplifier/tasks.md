@@ -61,7 +61,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 5: FK score bounds per reading level`
     - Generate valid inputs; assert `grade3.fkScore <= 4.0`, `4.1 <= grade6.fkScore <= 7.0`, `7.1 <= grade9.fkScore <= 10.0`
 
-  - [-] 4.5 Write property test for three-variant response (Property 3)
+  - [x] 4.5 Write property test for three-variant response (Property 3)
     - **Property 3: Response always contains three level variants**
     - **Validates: Requirements 2.1**
     - `// Feature: crisis-text-simplifier, Property 3: Response always contains three level variants`

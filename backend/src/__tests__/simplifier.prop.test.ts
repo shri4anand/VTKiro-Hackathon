@@ -1,5 +1,6 @@
+// Feature: crisis-text-simplifier, Property 3: Response always contains three level variants
 // Feature: crisis-text-simplifier, Property 5: FK score bounds per reading level
-// Validates: Requirements 2.5, 2.6, 2.7
+// Validates: Requirements 2.1, 2.5, 2.6, 2.7
 
 import * as fc from "fast-check";
 
@@ -50,6 +51,36 @@ import { scoreVariants } from "../scorer";
 const validAlertText = fc
   .string({ minLength: 1, maxLength: 200 })
   .filter((s) => s.trim().length > 0);
+
+describe("Property 3: Response always contains three level variants", () => {
+  it("returns exactly 3 variants with correct level keys", () => {
+    fc.assert(
+      fc.property(
+        validAlertText,
+        fc.constantFrom(...G3),
+        fc.constantFrom(...G6),
+        fc.constantFrom(...G9),
+        (_input, g3, g6, g9) => {
+          const variants = scoreVariants({ grade3: g3, grade6: g6, grade9: g9 });
+          
+          // Assert exactly 3 variants
+          expect(variants).toHaveLength(3);
+          
+          // Assert all required level keys are present
+          const levels = variants.map((v) => v.level);
+          expect(levels).toContain("grade3");
+          expect(levels).toContain("grade6");
+          expect(levels).toContain("grade9");
+          
+          // Assert no duplicate levels
+          const uniqueLevels = new Set(levels);
+          expect(uniqueLevels.size).toBe(3);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+});
 
 describe("Property 5: FK score bounds per reading level", () => {
   it("grade3 fkScore is <= 4.0 for simple texts", () => {
