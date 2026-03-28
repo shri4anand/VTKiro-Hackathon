@@ -27,7 +27,7 @@ export const PanelToggleButton: React.FC<PanelToggleButtonProps> = ({
       onClick={onClick}
       onKeyDown={handleKeyDown}
       aria-label={ariaLabel}
-      className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors duration-200"
+      className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors duration-200 motion-reduce:transition-none"
     >
       {isMinimized ? (
         // ChevronRight icon for maximize action

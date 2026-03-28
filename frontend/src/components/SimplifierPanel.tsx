@@ -18,7 +18,7 @@ export const SimplifierPanel: React.FC<SimplifierPanelProps> = ({
 }) => {
   return (
     <div
-      className={`absolute top-4 left-4 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg z-10 transition-all duration-300 ease-in-out ${
+      className={`absolute top-4 left-4 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg z-10 transition-all duration-300 ease-in-out motion-reduce:transition-none ${
         isMinimized ? 'w-12' : 'w-64'
       } ${
         !isMinimized && (isFocused ? 'opacity-100' : 'opacity-40 hover:opacity-100')

@@ -141,3 +141,14 @@ describe('FeedPanelWrapper', () => {
     expect(toggleButton).toBeInTheDocument();
   });
 });
+
+  it('applies motion-reduce:transition-none class for reduced motion support', () => {
+    const { container } = render(
+      <FeedPanelWrapper isMinimized={false} onToggleMinimize={vi.fn()}>
+        <div>Feed Content</div>
+      </FeedPanelWrapper>
+    );
+
+    const panel = container.firstChild as HTMLElement;
+    expect(panel.className).toContain('motion-reduce:transition-none');
+  });

@@ -14,7 +14,7 @@ This implementation adds minimize/maximize controls to the Simplifier Panel and 
   - Add hover and focus styles with Tailwind
   - _Requirements: 2.6, 3.4, 6.1, 6.2, 6.4_
 
-- [ ]* 1.1 Write property test for PanelToggleButton accessibility
+- [x] 1.1 Write property test for PanelToggleButton accessibility
   - **Property 5: Panel control buttons have accessible labels**
   - **Property 9: Panel control buttons are keyboard accessible**
   - **Validates: Requirements 2.6, 3.4, 6.1, 6.2, 6.4**
@@ -31,7 +31,7 @@ This implementation adds minimize/maximize controls to the Simplifier Panel and 
   - Use vertical text orientation for title when minimized (`writing-mode: vertical-rl`)
   - _Requirements: 1.1, 2.1, 2.3, 2.4, 2.5, 3.2, 3.3, 5.3, 6.3, 7.1, 7.2_
 
-- [ ]* 2.1 Write property tests for SimplifierPanel
+- [x] 2.1 Write property tests for SimplifierPanel
   - **Property 2: Minimized panels show only header with maximize button**
   - **Property 3: Minimized panels have constrained width**
   - **Property 4: Maximized panels show full content**
@@ -40,7 +40,7 @@ This implementation adds minimize/maximize controls to the Simplifier Panel and 
   - **Property 11: Minimized panel content is hidden from assistive technology**
   - **Validates: Requirements 2.4, 2.5, 3.1, 3.3, 5.1, 5.2, 6.3, 6.5_
 
-- [-] 3. Create FeedPanelWrapper component
+- [x] 3. Create FeedPanelWrapper component
   - Create `frontend/src/components/FeedPanelWrapper.tsx`
   - Accept `isMinimized`, `onToggleMinimize`, and `children` props
   - Render panel header with title "Crisis Feed" and PanelToggleButton
@@ -51,7 +51,7 @@ This implementation adds minimize/maximize controls to the Simplifier Panel and 
   - Use vertical text orientation for title when minimized (`writing-mode: vertical-rl`)
   - _Requirements: 1.2, 2.2, 2.3, 2.4, 2.5, 3.2, 3.3, 5.3, 6.3_
 
-- [ ]* 3.1 Write property tests for FeedPanelWrapper
+- [x] 3.1 Write property tests for FeedPanelWrapper
   - **Property 2: Minimized panels show only header with maximize button**
   - **Property 3: Minimized panels have constrained width**
   - **Property 4: Maximized panels show full content**
@@ -60,10 +60,10 @@ This implementation adds minimize/maximize controls to the Simplifier Panel and 
   - **Property 11: Minimized panel content is hidden from assistive technology**
   - **Validates: Requirements 2.4, 2.5, 3.1, 3.3, 5.1, 5.2, 6.3, 6.5_
 
-- [ ] 4. Checkpoint - Ensure all tests pass
+- [x] 4. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Integrate SimplifierPanel into App.tsx
+- [x] 5. Integrate SimplifierPanel into App.tsx
   - Import SimplifierPanel component
   - Wrap existing Simplifier Panel content with SimplifierPanel component
   - Pass `isSimplifierMinimized` and `setIsSimplifierMinimized` state
@@ -73,7 +73,7 @@ This implementation adds minimize/maximize controls to the Simplifier Panel and 
   - Ensure initial state is maximized (isSimplifierMinimized = false)
   - _Requirements: 1.1, 4.1, 4.2, 7.1, 7.2, 8.1_
 
-- [ ] 6. Integrate FeedPanelWrapper into App.tsx
+- [x] 6. Integrate FeedPanelWrapper into App.tsx
   - Import FeedPanelWrapper component
   - Wrap existing Feed Panel with FeedPanelWrapper component
   - Pass `isFeedMinimized` and `setIsFeedMinimized` state
@@ -82,25 +82,25 @@ This implementation adds minimize/maximize controls to the Simplifier Panel and 
   - Ensure initial state is maximized (isFeedMinimized = false)
   - _Requirements: 1.2, 4.1, 4.2, 8.2_
 
-- [ ]* 6.1 Write property tests for panel state management
+- [x] 6.1 Write property tests for panel state management
   - **Property 1: Panel toggle transitions state**
   - **Property 6: Panel state persists across unrelated interactions**
   - **Property 7: Panel states are independent**
   - **Validates: Requirements 2.3, 3.2, 4.1, 4.2, 4.3, 4.4_
 
-- [ ] 7. Checkpoint - Ensure all tests pass
+- [x] 7. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 8. Add reduced motion support
+- [-] 8. Add reduced motion support
   - Add `prefers-reduced-motion` media query handling to panel transition styles
   - Update SimplifierPanel and FeedPanelWrapper to disable transitions when user prefers reduced motion
   - _Requirements: 5.3_
 
-- [ ]* 8.1 Write property test for feed polling continuity
+- [ ] 8.1 Write property test for feed polling continuity
   - **Property 12: Feed polling continues in both states**
   - **Validates: Requirements 7.3_
 
-- [ ]* 8.2 Write property test for panel positioning consistency
+- [ ] 8.2 Write property test for panel positioning consistency
   - **Property 13: Panel positioning remains consistent across states**
   - **Validates: Requirements 7.4_
 

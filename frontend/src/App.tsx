@@ -7,6 +7,8 @@ import { OutputPanel } from "./components/OutputPanel";
 import { StatusRegion } from "./components/StatusRegion";
 import { MapView } from "./components/MapView";
 import { FeedPanel } from "./components/FeedPanel";
+import { FeedPanelWrapper } from "./components/FeedPanelWrapper";
+import { SimplifierPanel } from "./components/SimplifierPanel";
 import { useSimplify } from "./hooks/useSimplify";
 import { useMapEvents } from "./hooks/useMapEvents";
 import { useFeedPoller } from "./hooks/useFeedPoller";
@@ -63,24 +65,12 @@ function AppContent() {
       />
 
       {/* Simplifier Panel - Overlay with auto-fade */}
-      <div 
-        className={`absolute top-4 left-4 w-80 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg p-4 z-10 transition-opacity duration-300 ${
-          isSimplifierFocused ? 'opacity-100' : 'opacity-40 hover:opacity-100'
-        }`}
-        onMouseEnter={() => setIsSimplifierFocused(true)}
-        onMouseLeave={() => setIsSimplifierFocused(false)}
-        onFocus={() => setIsSimplifierFocused(true)}
-        onBlur={(e) => {
-          // Only blur if focus is leaving the panel entirely
-          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-            setIsSimplifierFocused(false);
-          }
-        }}
+      <SimplifierPanel
+        isMinimized={isSimplifierMinimized}
+        onToggleMinimize={() => setIsSimplifierMinimized(!isSimplifierMinimized)}
+        isFocused={isSimplifierFocused}
+        onFocusChange={setIsSimplifierFocused}
       >
-        <h1 className="text-xl font-bold text-gray-900 mb-4">
-          Crisis Text Simplifier
-        </h1>
-
         <div className="mb-4">
           <AlertInputPanel
             inputText={state.inputText}
@@ -113,12 +103,15 @@ function AppContent() {
         </div>
 
         <OutputPanel />
-      </div>
+      </SimplifierPanel>
 
       {/* Feed Panel - Overlay */}
-      <div className="absolute top-4 right-4 w-80 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg z-10">
+      <FeedPanelWrapper
+        isMinimized={isFeedMinimized}
+        onToggleMinimize={() => setIsFeedMinimized(!isFeedMinimized)}
+      >
         <FeedPanel />
-      </div>
+      </FeedPanelWrapper>
     </div>
   );
 }
