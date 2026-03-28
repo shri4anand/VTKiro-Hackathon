@@ -93,7 +93,7 @@ export function EventDetailPanel({
       ref={panelRef}
       tabIndex={-1}
       aria-label="Event detail panel"
-      className="absolute top-4 right-4 w-96 max-h-[calc(100vh-2rem)] bg-white rounded-lg shadow-2xl overflow-y-auto focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="absolute top-4 left-1/2 -translate-x-1/2 w-96 max-h-[80vh] bg-white rounded-lg shadow-2xl overflow-y-auto focus:outline-none focus:ring-2 focus:ring-blue-500 z-20"
     >
       <div className="p-6">
         {/* Close button */}

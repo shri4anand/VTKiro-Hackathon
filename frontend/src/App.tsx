@@ -20,6 +20,7 @@ function AppContent() {
   const { events, error: mapError } = useMapEvents();
   const [isSimplifierFocused, setIsSimplifierFocused] = React.useState(false);
   const [isSimplifierMinimized, setIsSimplifierMinimized] = React.useState(false);
+  const [isFeedFocused, setIsFeedFocused] = React.useState(false);
   const [isFeedMinimized, setIsFeedMinimized] = React.useState(false);
   
   // Start feed polling
@@ -104,6 +105,8 @@ function AppContent() {
       <FeedPanelWrapper
         isMinimized={isFeedMinimized}
         onToggleMinimize={() => setIsFeedMinimized(!isFeedMinimized)}
+        isFocused={isFeedFocused}
+        onFocusChange={setIsFeedFocused}
       >
         <FeedPanel />
       </FeedPanelWrapper>

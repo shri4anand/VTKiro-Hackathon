@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import fc from 'fast-check';
 import { FeedPanelWrapper } from '../../components/FeedPanelWrapper';
@@ -11,6 +11,88 @@ import { FeedPanelWrapper } from '../../components/FeedPanelWrapper';
 // Feature: interactive-overlay-controls, Property 11: Minimized panel content is hidden from assistive technology
 // **Validates: Requirements 2.4, 2.5, 3.1, 3.3, 5.1, 5.2, 6.3, 6.5**
 
+// Feature: feed-panel-transparency, Property 1: Bug Condition - Feed Panel Transparency When Not Interacting
+// **Validates: Requirements 2.1, 2.2, 2.3, 2.4**
+
+describe('FeedPanelWrapper - Bug Condition Exploration (feed-panel-transparency)', () => {
+  it('Property 1: Bug Condition - Feed Panel Transparency When Not Interacting', () => {
+    // CRITICAL: This test MUST FAIL on unfixed code - failure confirms the bug exists
+    // This test encodes the expected behavior - it will validate the fix when it passes after implementation
+    // GOAL: Surface counterexamples that demonstrate the bug exists
+    
+    // Property-based test: for any maximized feed panel that is not being interacted with,
+    // the panel should have opacity-40 class, and when hovered/focused, should have opacity-100
+    fc.assert(
+      fc.property(
+        fc.constant(true), // Dummy property for iteration
+        () => {
+          const onToggleMinimize = vi.fn();
+          const onFocusChange = vi.fn();
+          const testContent = <div data-testid="panel-content">Test Content</div>;
+
+          // Test Case 1: Maximized panel without interaction should have opacity-40
+          const { container, unmount } = render(
+            <FeedPanelWrapper
+              isMinimized={false}
+              onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
+              children={testContent}
+            />
+          );
+
+          const panel = container.firstChild as HTMLElement;
+
+          // Assert: Panel should have opacity-40 when maximized and not focused
+          // This will FAIL on unfixed code because FeedPanelWrapper doesn't have isFocused prop
+          expect(panel).toHaveClass('opacity-40');
+          
+          // Assert: Panel should have hover:opacity-100 class for hover restoration
+          // This will FAIL on unfixed code because FeedPanelWrapper doesn't have this class
+          expect(panel.className).toContain('hover:opacity-100');
+
+          // Test Case 2: Hover should restore opacity-100
+          fireEvent.mouseEnter(panel);
+          
+          // Assert: onFocusChange should be called with true on hover
+          // This will FAIL on unfixed code because FeedPanelWrapper doesn't have onMouseEnter handler
+          expect(onFocusChange).toHaveBeenCalledWith(true);
+
+          // Test Case 3: Focus within should restore opacity-100
+          const button = screen.getByRole('button');
+          fireEvent.focus(button);
+          
+          // Assert: onFocusChange should be called with true on focus
+          // This will FAIL on unfixed code because FeedPanelWrapper doesn't have onFocus handler
+          expect(onFocusChange).toHaveBeenCalledWith(true);
+
+          // Test Case 4: Minimized panel should always have opacity-100
+          unmount();
+          
+          const { container: container2, unmount: unmount2 } = render(
+            <FeedPanelWrapper
+              isMinimized={true}
+              onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
+              children={testContent}
+            />
+          );
+
+          const panelMinimized = container2.firstChild as HTMLElement;
+          
+          // Assert: Minimized panel should have opacity-100
+          expect(panelMinimized).toHaveClass('opacity-100');
+          expect(panelMinimized).not.toHaveClass('opacity-40');
+
+          unmount2();
+        }
+      ),
+      { numRuns: 50 }
+    );
+  });
+});
+
 describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
   it('Property 2: Minimized panels show only header with maximize button', () => {
     // Property-based test: for any minimized panel,
@@ -20,12 +102,15 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
         fc.constant(true), // Always test minimized state
         () => {
           const onToggleMinimize = vi.fn();
+          const onFocusChange = vi.fn();
           const testContent = <div data-testid="panel-content">Test Content</div>;
 
           const { container, unmount } = render(
             <FeedPanelWrapper
               isMinimized={true}
               onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
               children={testContent}
             />
           );
@@ -60,12 +145,15 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
         fc.constant(true), // Always test minimized state
         () => {
           const onToggleMinimize = vi.fn();
+          const onFocusChange = vi.fn();
           const testContent = <div>Test Content</div>;
 
           const { container, unmount } = render(
             <FeedPanelWrapper
               isMinimized={true}
               onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
               children={testContent}
             />
           );
@@ -90,19 +178,22 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
         fc.constant(false), // Always test maximized state
         () => {
           const onToggleMinimize = vi.fn();
+          const onFocusChange = vi.fn();
           const testContent = <div data-testid="panel-content">Test Content</div>;
 
           const { container, unmount } = render(
             <FeedPanelWrapper
               isMinimized={false}
               onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
               children={testContent}
             />
           );
 
-          // Assert: Panel has w-64 class (256px width)
+          // Assert: Panel has w-[28rem] class (28rem width)
           const panel = container.firstChild as HTMLElement;
-          expect(panel).toHaveClass('w-64');
+          expect(panel.className).toContain('w-[28rem]');
           expect(panel).not.toHaveClass('w-12');
 
           // Assert: Panel content IS rendered
@@ -125,12 +216,15 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
         fc.boolean(), // isMinimized
         (isMinimized) => {
           const onToggleMinimize = vi.fn();
+          const onFocusChange = vi.fn();
           const testContent = <div>Test Content</div>;
 
           const { container, unmount } = render(
             <FeedPanelWrapper
               isMinimized={isMinimized}
               onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
               children={testContent}
             />
           );
@@ -170,12 +264,15 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
         fc.boolean(), // isMinimized
         (isMinimized) => {
           const onToggleMinimize = vi.fn();
+          const onFocusChange = vi.fn();
           const testContent = <div>Test Content</div>;
 
           const { container, unmount } = render(
             <FeedPanelWrapper
               isMinimized={isMinimized}
               onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
               children={testContent}
             />
           );
@@ -207,12 +304,15 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
         fc.constant(true), // Always test minimized state
         () => {
           const onToggleMinimize = vi.fn();
+          const onFocusChange = vi.fn();
           const testContent = <div data-testid="panel-content">Test Content</div>;
 
           const { container, unmount } = render(
             <FeedPanelWrapper
               isMinimized={true}
               onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
               children={testContent}
             />
           );
@@ -242,6 +342,7 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
         fc.constant(true), // Dummy property for iteration
         () => {
           const onToggleMinimize = vi.fn();
+          const onFocusChange = vi.fn();
           const testContent = <div data-testid="panel-content">Test Content</div>;
 
           // Test minimized state
@@ -249,6 +350,8 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
             <FeedPanelWrapper
               isMinimized={true}
               onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
               children={testContent}
             />
           );
@@ -260,6 +363,8 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
             <FeedPanelWrapper
               isMinimized={false}
               onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
               children={testContent}
             />
           );
@@ -279,6 +384,7 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
         fc.constant(true), // Dummy property for iteration
         () => {
           const onToggleMinimize = vi.fn();
+          const onFocusChange = vi.fn();
           const testContent = <div>Test Content</div>;
 
           // Test minimized state width
@@ -286,6 +392,8 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
             <FeedPanelWrapper
               isMinimized={true}
               onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
               children={testContent}
             />
           );
@@ -298,11 +406,13 @@ describe('FeedPanelWrapper - Properties 2, 3, 4, 8, 10, 11', () => {
             <FeedPanelWrapper
               isMinimized={false}
               onToggleMinimize={onToggleMinimize}
+              isFocused={false}
+              onFocusChange={onFocusChange}
               children={testContent}
             />
           );
           const panelMaximized = container2.firstChild as HTMLElement;
-          expect(panelMaximized).toHaveClass('w-64');
+          expect(panelMaximized.className).toContain('w-[28rem]');
           unmount2();
         }
       ),

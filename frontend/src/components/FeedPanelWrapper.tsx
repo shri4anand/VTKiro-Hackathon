@@ -4,19 +4,35 @@ import { PanelToggleButton } from './PanelToggleButton';
 interface FeedPanelWrapperProps {
   isMinimized: boolean;
   onToggleMinimize: () => void;
+  isFocused: boolean;
+  onFocusChange: (focused: boolean) => void;
   children: React.ReactNode;
 }
 
 export const FeedPanelWrapper: React.FC<FeedPanelWrapperProps> = ({
   isMinimized,
   onToggleMinimize,
+  isFocused,
+  onFocusChange,
   children,
 }) => {
   return (
     <div
-      className={`absolute top-4 right-4 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg z-10 transition-all duration-300 ease-in-out motion-reduce:transition-none ${
-        isMinimized ? 'w-12' : 'w-96'
+      className={`absolute top-4 right-4 max-h-[calc(100vh-2rem)] overflow-y-auto overflow-x-hidden bg-white rounded-lg shadow-lg z-10 transition-all duration-300 ease-in-out motion-reduce:transition-none ${
+        isMinimized ? 'w-12' : 'w-[28rem]'
+      } ${
+        !isMinimized && (isFocused ? 'opacity-100' : 'opacity-40 hover:opacity-100')
+      } ${
+        isMinimized ? 'opacity-100' : ''
       }`}
+      onMouseEnter={() => !isMinimized && onFocusChange(true)}
+      onMouseLeave={() => !isMinimized && onFocusChange(false)}
+      onFocus={() => !isMinimized && onFocusChange(true)}
+      onBlur={(e) => {
+        if (!isMinimized && !e.currentTarget.contains(e.relatedTarget as Node)) {
+          onFocusChange(false);
+        }
+      }}
       aria-expanded={!isMinimized}
     >
       {/* Panel Header */}
