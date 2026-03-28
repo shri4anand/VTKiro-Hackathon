@@ -114,7 +114,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 6: Language selection updates all displayed variants`
     - Generate language selections; assert all rendered cards reflect selected language
 
-  - [ ] 6.7 Implement ARIA live `StatusRegion` component
+  - [x] 6.7 Implement ARIA live `StatusRegion` component
     - Announce `loading` and `success` state transitions to screen readers
     - _Requirements: 5.5, 5.6_
 
