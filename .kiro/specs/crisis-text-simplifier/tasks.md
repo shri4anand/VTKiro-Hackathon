@@ -98,7 +98,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Show retry button on `LLM_UNAVAILABLE` and `TIMEOUT` errors; highlight input on `VALIDATION_ERROR`
     - _Requirements: 2.2, 6.1, 6.4_
 
-  - [ ] 6.4 Write property test for simultaneous rendering (Property 4)
+  - [x] 6.4 Write property test for simultaneous rendering (Property 4)
     - **Property 4: All three variants are rendered simultaneously**
     - **Validates: Requirements 2.2**
     - `// Feature: crisis-text-simplifier, Property 4: All three variants are rendered simultaneously`
