@@ -135,7 +135,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Language toggle change → new API call with correct language param
     - _Requirements: 2.2, 3.4, 6.1, 6.2, 6.4_
 
-- [ ] 7. Audio playback (TTS)
+- [x] 7. Audio playback (TTS)
   - [x] 7.1 Implement `useTTS` hook using Web Speech API
     - `play(text, language)` sets `playingLevel`; `stop()` clears it
     - If `speechSynthesis` unavailable, hide play buttons and show static note
@@ -146,35 +146,35 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Play button with ARIA label; stop button; playing indicator shown when `playingLevel === card.level`
     - _Requirements: 4.1, 4.3, 5.3_
 
-  - [ ] 7.3 Write property test for play button presence (Property 7)
+  - [x] 7.3 Write property test for play button presence (Property 7)
     - **Property 7: Each output card has a play button**
     - **Validates: Requirements 4.1**
     - `// Feature: crisis-text-simplifier, Property 7: Each output card has a play button`
     - Generate valid responses; assert each card contains a play button element
 
-  - [ ] 7.4 Write property test for TTS invocation (Property 8)
+  - [x] 7.4 Write property test for TTS invocation (Property 8)
     - **Property 8: TTS is called with correct text and language**
     - **Validates: Requirements 4.2, 4.6**
     - `// Feature: crisis-text-simplifier, Property 8: TTS is called with correct text and language`
     - Generate card selections and language choices; assert TTS mock called with correct text and language
 
-  - [ ] 7.5 Write property test for playing indicator (Property 9)
+  - [x] 7.5 Write property test for playing indicator (Property 9)
     - **Property 9: Playing indicator is shown during active playback**
     - **Validates: Requirements 4.3**
     - `// Feature: crisis-text-simplifier, Property 9: Playing indicator is shown during active playback`
     - Generate `playingLevel` values; assert correct card shows playing indicator
 
-  - [ ] 7.6 Write property test for stop control (Property 10)
+  - [x] 7.6 Write property test for stop control (Property 10)
     - **Property 10: Stop control halts TTS**
     - **Validates: Requirements 4.4**
     - `// Feature: crisis-text-simplifier, Property 10: Stop control halts TTS`
     - Generate active playback states; assert stop sets `playingLevel` to null and calls TTS stop
 
-  - [ ] 7.7 Write unit tests for TTS
+  - [x] 7.7 Write unit tests for TTS
     - Play activates indicator; stop clears it; TTS failure shows audio unavailable message; Web Speech API absent hides play buttons
     - _Requirements: 4.3, 4.4, 4.5_
 
-- [ ] 8. Checkpoint — Ensure all frontend simplify and TTS tests pass
+- [x] 8. Checkpoint — Ensure all frontend simplify and TTS tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 9. Backend GET /api/feed endpoint
