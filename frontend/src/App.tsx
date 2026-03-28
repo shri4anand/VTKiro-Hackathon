@@ -12,7 +12,7 @@ function AppContent() {
   const state = useAppState();
   const dispatch = useAppDispatch();
   const { simplify } = useSimplify();
-  const { play, stop, skip, setSpeed, speed, isAvailable } = useTTS();
+  const { play, pause, skip, setSpeed, speed, isAvailable } = useTTS();
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
 
   const speedOptions = [0.5, 1.0, 2.0];
@@ -30,11 +30,20 @@ function AppContent() {
   };
 
   const handlePlayPause = () => {
+    console.log("[App] handlePlayPause called:", { 
+      playingLevel: state.playingLevel, 
+      lastPlayedLevel: state.lastPlayedLevel 
+    });
+
     if (state.playingLevel) {
-      stop();
+      // Currently playing - pause it
+      console.log("[App] Pausing audio");
+      pause();
     } else if (state.lastPlayedLevel) {
+      // Not playing but we have a last played level - resume/play it
       const variant = state.variants?.find(v => v.level === state.lastPlayedLevel);
       if (variant) {
+        console.log("[App] Playing/resuming audio for level:", state.lastPlayedLevel);
         play(variant.text, state.language, state.lastPlayedLevel);
       }
     }
@@ -103,8 +112,8 @@ function AppContent() {
           <FeedPanel />
         </main>
 
-        {/* Floating Audio Player */}
-        {state.lastPlayedLevel && state.variants && isAvailable && (
+        {/* Floating Audio Player - Hidden for now */}
+        {false && state.lastPlayedLevel && state.variants && isAvailable && (
           <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[500px] z-50">
             <div className="bg-surface/70 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full px-6 py-3 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">

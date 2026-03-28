@@ -9,11 +9,21 @@ interface AudioControlsProps {
 }
 
 export function AudioControls({ variant, language }: AudioControlsProps) {
-  const { play, stop, isAvailable, error } = useTTS();
+  const { play, pause, isAvailable, error, isLoading } = useTTS();
   const state = useAppState();
   const isPlaying = state.playingLevel === variant.level;
 
+  console.log("[AudioControls] Render:", {
+    level: variant.level,
+    isPlaying,
+    isAvailable,
+    isLoading,
+    error,
+    textLength: variant.text.length,
+  });
+
   if (!isAvailable) {
+    console.log("[AudioControls] TTS not available, hiding controls");
     return null;
   }
 
@@ -21,20 +31,37 @@ export function AudioControls({ variant, language }: AudioControlsProps) {
     <div className="flex items-center gap-2">
       {isPlaying ? (
         <button
-          onClick={stop}
-          aria-label={`Stop audio for ${variant.level} reading level`}
+          onClick={() => {
+            console.log("[AudioControls] Pause button clicked");
+            pause();
+          }}
+          aria-label={`Pause audio for ${variant.level} reading level`}
           className="p-3 bg-surface-container rounded-xl text-on-surface hover:bg-primary hover:text-on-primary transition-all group/btn"
+          disabled={isLoading}
         >
-          <span className="material-symbols-outlined">volume_up</span>
+          <span className="material-symbols-outlined">pause</span>
         </button>
       ) : (
         <button
-          onClick={() => play(variant.text, language, variant.level)}
+          onClick={() => {
+            console.log("[AudioControls] Play button clicked:", { text: variant.text.substring(0, 50), language, level: variant.level });
+            play(variant.text, language, variant.level);
+          }}
           aria-label={`Play audio for ${variant.level} reading level`}
-          className="flex items-center gap-2 px-4 py-2 bg-surface-container rounded-xl text-on-surface font-bold text-sm hover:bg-surface-variant transition-all"
+          className="flex items-center gap-2 px-4 py-2 bg-surface-container rounded-xl text-on-surface font-bold text-sm hover:bg-surface-variant transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading}
         >
-          <span className="material-symbols-outlined text-[20px]">play_circle</span>
-          Listen
+          {isLoading ? (
+            <>
+              <span className="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
+              Loading...
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-[20px]">play_circle</span>
+              Listen
+            </>
+          )}
         </button>
       )}
       <button 

@@ -1,160 +1,243 @@
-import { useCallback, useRef, useEffect } from "react";
-import { useAppState, useAppDispatch } from "../store/appState";
+import { useCallback, useRef, useEffect, useState } from "react";
+import { useAppDispatch } from "../store/appState";
 import { Language, ReadingLevel } from "../types";
 
 interface UseTTSReturn {
   play: (text: string, language: Language, level: ReadingLevel) => void;
+  pause: () => void;
   stop: () => void;
   skip: (seconds: number) => void;
   setSpeed: (speed: number) => void;
   speed: number;
   isAvailable: boolean;
   error: string | null;
+  isLoading: boolean;
 }
 
-// Map Language type to Web Speech API language codes
-const languageMap: Record<Language, string> = {
-  en: "en-US",
-  es: "es-ES",
-  fr: "fr-FR",
-  zh: "zh-CN",
-  ar: "ar-SA",
-  pt: "pt-BR",
-};
+const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || "http://localhost:3001";
+
+// Cache for storing generated audio URLs
+const audioCache = new Map<string, string>();
+
+function getCacheKey(text: string, language: Language): string {
+  // Use first 100 chars + language as cache key
+  return `${language}:${text.substring(0, 100)}`;
+}
 
 export function useTTS(): UseTTSReturn {
-  const state = useAppState();
   const dispatch = useAppDispatch();
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const errorRef = useRef<string | null>(null);
-  const currentTextRef = useRef<string>("");
-  const currentLanguageRef = useRef<Language>("en");
-  const currentLevelRef = useRef<ReadingLevel>("grade6");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const currentCacheKeyRef = useRef<string>("");
   const speedRef = useRef<number>(1.0);
 
-  // Check if Web Speech API is available
-  const isAvailable =
-    typeof window !== "undefined" &&
-    (window.speechSynthesis !== undefined ||
-      (window as any).webkitSpeechSynthesis !== undefined);
+  const isAvailable = true;
+
+  const pause = useCallback(() => {
+    console.log("[useTTS] Pause called");
+    if (!audioRef.current) return;
+
+    try {
+      audioRef.current.pause();
+      console.log("[useTTS] Audio paused");
+      dispatch({ type: "SET_PLAYING_LEVEL", payload: null });
+    } catch (err) {
+      console.error("[useTTS] ERROR in pause():", err);
+    }
+  }, [dispatch]);
+
+  const stop = useCallback(() => {
+    console.log("[useTTS] Stop called");
+    if (!audioRef.current) return;
+
+    try {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      console.log("[useTTS] Audio stopped and reset");
+      dispatch({ type: "SET_PLAYING_LEVEL", payload: null });
+      setError(null);
+    } catch (err) {
+      console.error("[useTTS] ERROR in stop():", err);
+    }
+  }, [dispatch]);
 
   const play = useCallback(
-    (text: string, language: Language, level: ReadingLevel) => {
+    async (text: string, language: Language, level: ReadingLevel) => {
+      console.log("[useTTS] Play called:", { textLength: text.length, language, level });
+
       if (!isAvailable) {
-        errorRef.current = "Speech synthesis is not available in this browser.";
+        console.error("[useTTS] ERROR: TTS not available");
+        setError("Speech synthesis is not available.");
         return;
       }
 
-      // Stop any existing playback
-      stop();
+      const cacheKey = getCacheKey(text, language);
 
-      // Store current playback info
-      currentTextRef.current = text;
-      currentLanguageRef.current = language;
-      currentLevelRef.current = level;
+      // If we have an audio element for this exact content and it's paused, just resume
+      if (audioRef.current && currentCacheKeyRef.current === cacheKey && audioRef.current.paused) {
+        console.log("[useTTS] Resuming paused audio");
+        try {
+          await audioRef.current.play();
+          dispatch({ type: "SET_PLAYING_LEVEL", payload: level });
+          return;
+        } catch (err) {
+          console.error("[useTTS] ERROR resuming audio:", err);
+          // Fall through to create new audio
+        }
+      }
+
+      // Stop and cleanup any existing audio completely
+      if (audioRef.current) {
+        console.log("[useTTS] Cleaning up existing audio");
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        audioRef.current.src = ""; // Clear the source to stop any loading
+        audioRef.current.remove(); // Remove from DOM if attached
+        audioRef.current = null;
+      }
 
       try {
-        const synth = window.speechSynthesis || (window as any).webkitSpeechSynthesis;
-        const utterance = new SpeechSynthesisUtterance(text);
+        let audioUrl = audioCache.get(cacheKey);
 
-        utterance.lang = languageMap[language];
-        utterance.rate = speedRef.current;
-        utterance.pitch = 1;
-        utterance.volume = 1;
+        // If not cached, fetch from backend
+        if (!audioUrl) {
+          console.log("[useTTS] Audio not cached, fetching from backend...");
+          setIsLoading(true);
 
-        // Set playingLevel when playback starts
-        utterance.onstart = () => {
+          const response = await fetch(`${API_BASE_URL}/api/tts`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ text, language }),
+          });
+
+          console.log("[useTTS] Backend response status:", response.status);
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: "TTS request failed" }));
+            console.error("[useTTS] ERROR: Backend returned error:", errorData);
+            setIsLoading(false);
+            throw new Error(errorData.error || "TTS request failed");
+          }
+
+          const data = await response.json();
+          console.log("[useTTS] Received audio data, length:", data.audio?.length);
+
+          // Create blob URL for better performance and caching
+          const audioBlob = await fetch(`data:audio/mpeg;base64,${data.audio}`).then(r => r.blob());
+          audioUrl = URL.createObjectURL(audioBlob);
+          audioCache.set(cacheKey, audioUrl);
+          console.log("[useTTS] Audio cached with key:", cacheKey);
+        } else {
+          console.log("[useTTS] Using cached audio");
+        }
+
+        // Create new audio element
+        const audio = new Audio();
+        audio.src = audioUrl;
+        audio.playbackRate = speedRef.current;
+        audio.preload = "auto";
+
+        console.log("[useTTS] Created audio element, playback rate:", speedRef.current);
+
+        audio.onloadeddata = () => {
+          console.log("[useTTS] Audio loaded, duration:", audio.duration);
+          setIsLoading(false);
+        };
+
+        audio.onplay = () => {
+          console.log("[useTTS] Audio started playing");
           dispatch({ type: "SET_PLAYING_LEVEL", payload: level });
           dispatch({ type: "SET_LAST_PLAYED_LEVEL", payload: level });
-          errorRef.current = null;
+          setError(null);
+          setIsLoading(false);
         };
 
-        // Clear playingLevel when playback ends
-        utterance.onend = () => {
+        audio.onpause = () => {
+          console.log("[useTTS] Audio paused, currentTime:", audio.currentTime, "ended:", audio.ended);
+          // Only clear playing level if audio ended or was reset to start
+          if (audio.currentTime === 0 || audio.ended) {
+            dispatch({ type: "SET_PLAYING_LEVEL", payload: null });
+          }
+        };
+
+        audio.onended = () => {
+          console.log("[useTTS] Audio ended");
           dispatch({ type: "SET_PLAYING_LEVEL", payload: null });
         };
 
-        // Handle errors
-        utterance.onerror = (event) => {
-          const errorMessage = `Audio unavailable for this variant.`;
-          errorRef.current = errorMessage;
+        audio.onerror = (e) => {
+          console.error("[useTTS] Audio element error:", e);
+          const errorMessage = "Audio unavailable for this variant.";
+          setError(errorMessage);
           dispatch({ type: "SET_PLAYING_LEVEL", payload: null });
+          setIsLoading(false);
         };
 
-        utteranceRef.current = utterance;
-        synth.speak(utterance);
+        // Store reference and cache key BEFORE playing
+        audioRef.current = audio;
+        currentCacheKeyRef.current = cacheKey;
+        
+        console.log("[useTTS] Starting audio playback...");
+        await audio.play();
+        console.log("[useTTS] Audio play() called successfully");
       } catch (err) {
-        errorRef.current = "Audio unavailable for this variant.";
+        console.error("[useTTS] ERROR: Exception in play():", err);
+        setError(err instanceof Error ? err.message : "Audio unavailable for this variant.");
         dispatch({ type: "SET_PLAYING_LEVEL", payload: null });
+        setIsLoading(false);
       }
     },
     [isAvailable, dispatch]
   );
 
-  const stop = useCallback(() => {
-    if (!isAvailable) return;
+  const skip = useCallback((seconds: number) => {
+    console.log("[useTTS] Skip called:", seconds);
+    if (!isAvailable || !audioRef.current) return;
 
     try {
-      const synth = window.speechSynthesis || (window as any).webkitSpeechSynthesis;
-      synth.cancel();
-      dispatch({ type: "SET_PLAYING_LEVEL", payload: null });
-      errorRef.current = null;
+      const audio = audioRef.current;
+      const newTime = Math.max(0, Math.min(audio.duration, audio.currentTime + seconds));
+      console.log("[useTTS] Skipping from", audio.currentTime, "to", newTime);
+      audio.currentTime = newTime;
     } catch (err) {
-      // Silently handle stop errors
+      console.error("[useTTS] ERROR in skip():", err);
     }
-  }, [isAvailable, dispatch]);
-
-  const skip = useCallback((seconds: number) => {
-    if (!isAvailable || !currentTextRef.current) return;
-
-    const synth = window.speechSynthesis || (window as any).webkitSpeechSynthesis;
-    
-    // Get current position (approximate based on elapsed time)
-    const text = currentTextRef.current;
-    const words = text.split(/\s+/);
-    const wordsPerSecond = 2.5; // Average speaking rate
-    
-    // Calculate approximate current word index
-    const currentWordIndex = Math.floor(synth.speaking ? 
-      (Date.now() - (utteranceRef.current as any)?.startTime || 0) / 1000 * wordsPerSecond : 0);
-    
-    // Calculate new position
-    const skipWords = Math.floor(Math.abs(seconds) * wordsPerSecond);
-    const newWordIndex = Math.max(0, Math.min(words.length - 1, 
-      seconds > 0 ? currentWordIndex + skipWords : currentWordIndex - skipWords));
-    
-    // Create new text starting from new position
-    const newText = words.slice(newWordIndex).join(" ");
-    
-    if (newText.trim()) {
-      // Restart playback from new position
-      play(newText, currentLanguageRef.current, currentLevelRef.current);
-    }
-  }, [isAvailable, play]);
+  }, [isAvailable]);
 
   const setSpeed = useCallback((speed: number) => {
+    console.log("[useTTS] Set speed called:", speed);
     speedRef.current = speed;
     
-    // If currently playing, restart with new speed
-    if (state.playingLevel && currentTextRef.current) {
-      play(currentTextRef.current, currentLanguageRef.current, currentLevelRef.current);
+    // If currently playing, update playback rate
+    if (audioRef.current) {
+      audioRef.current.playbackRate = speed;
+      console.log("[useTTS] Updated playback rate to:", speed);
     }
-  }, [state.playingLevel, play]);
+  }, []);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      stop();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
     };
-  }, [stop]);
+  }, []);
 
   return {
     play,
+    pause,
     stop,
     skip,
     setSpeed,
     speed: speedRef.current,
     isAvailable,
-    error: errorRef.current,
+    error,
+    isLoading,
   };
 }
