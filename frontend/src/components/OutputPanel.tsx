@@ -1,4 +1,3 @@
-import React from "react";
 import { useAppState } from "../store/appState";
 import { SimplifiedCard } from "./SimplifiedCard";
 

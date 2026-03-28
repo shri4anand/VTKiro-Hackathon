@@ -93,18 +93,18 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 13: Alert input is preserved on any error`
     - Generate error conditions; assert `inputText` unchanged after error
 
-  - [ ] 6.3 Build `OutputPanel` and `SimplifiedCard` components
+  - [x] 6.3 Build `OutputPanel` and `SimplifiedCard` components
     - Render all three cards simultaneously on success; each card shows level badge, text, and FK score
     - Show retry button on `LLM_UNAVAILABLE` and `TIMEOUT` errors; highlight input on `VALIDATION_ERROR`
     - _Requirements: 2.2, 6.1, 6.4_
 
-  - [ ] 6.4 Write property test for simultaneous rendering (Property 4)
+  - [x] 6.4 Write property test for simultaneous rendering (Property 4)
     - **Property 4: All three variants are rendered simultaneously**
     - **Validates: Requirements 2.2**
     - `// Feature: crisis-text-simplifier, Property 4: All three variants are rendered simultaneously`
     - Generate valid responses; assert all 3 cards present in output panel
 
-  - [ ] 6.5 Wire language toggle to re-trigger `/api/simplify` with new language
+  - [x] 6.5 Wire language toggle to re-trigger `/api/simplify` with new language
     - Language change dispatches new request; all three cards update without manual resubmit
     - _Requirements: 3.2, 3.4, 3.5_
 
