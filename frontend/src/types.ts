@@ -4,6 +4,8 @@ export type Language = "en" | "es" | "fr" | "zh" | "ar" | "pt";
 
 export type ReadingLevel = "grade3" | "grade6" | "grade9";
 
+export type SeverityLevel = "low" | "medium" | "high" | "critical";
+
 export interface AlertInput {
   text: string; // 1–10000 chars
   language: Language; // default: "en"
@@ -33,6 +35,8 @@ export interface FeedItem {
   title: string;
   source: string;
   publishedAt: string; // ISO 8601
+  latitude?: number; // optional — present when article has geographic data
+  longitude?: number; // optional — present when article has geographic data
   variants: SimplifiedVariant[]; // always grade3, grade6, grade9
 }
 
@@ -44,6 +48,16 @@ export interface FeedResponse {
 export interface FeedError {
   error: string;
   code: "NEWS_SOURCE_UNAVAILABLE" | "TIMEOUT" | "MALFORMED_RESPONSE";
+}
+
+export interface MapEvent {
+  id: string;
+  title: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  timestamp: string; // ISO 8601
+  severity: SeverityLevel;
 }
 
 export interface AppState {

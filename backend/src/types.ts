@@ -34,6 +34,8 @@ export interface FeedItem {
   source: string;
   publishedAt: string; // ISO 8601
   variants: SimplifiedVariant[];
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface FeedResponse {

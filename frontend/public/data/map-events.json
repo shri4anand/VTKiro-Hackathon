@@ -1,0 +1,74 @@
+[
+  {
+    "id": "evt-001",
+    "title": "Wildfire — Northern California",
+    "description": "A fast-moving wildfire has prompted evacuation orders for three counties in Northern California. Residents are advised to leave immediately.",
+    "latitude": 39.5,
+    "longitude": -121.8,
+    "timestamp": "2026-03-28T10:30:00Z",
+    "severity": "critical"
+  },
+  {
+    "id": "evt-002",
+    "title": "Hurricane Warning — Florida Coast",
+    "description": "Category 3 hurricane approaching the Florida coast. Coastal areas under mandatory evacuation.",
+    "latitude": 27.9,
+    "longitude": -82.5,
+    "timestamp": "2026-03-28T08:15:00Z",
+    "severity": "critical"
+  },
+  {
+    "id": "evt-003",
+    "title": "Earthquake — Tokyo Region",
+    "description": "Magnitude 6.2 earthquake struck near Tokyo. Minor damage reported, tsunami warning issued.",
+    "latitude": 35.6762,
+    "longitude": 139.6503,
+    "timestamp": "2026-03-28T06:45:00Z",
+    "severity": "high"
+  },
+  {
+    "id": "evt-004",
+    "title": "Flooding — Bangladesh",
+    "description": "Heavy monsoon rains have caused severe flooding in multiple districts. Thousands displaced.",
+    "latitude": 23.8103,
+    "longitude": 90.4125,
+    "timestamp": "2026-03-27T22:00:00Z",
+    "severity": "high"
+  },
+  {
+    "id": "evt-005",
+    "title": "Severe Storm — Sydney",
+    "description": "Severe thunderstorm warning in effect. Heavy rain and strong winds expected through evening.",
+    "latitude": -33.8688,
+    "longitude": 151.2093,
+    "timestamp": "2026-03-28T12:00:00Z",
+    "severity": "medium"
+  },
+  {
+    "id": "evt-006",
+    "title": "Heat Advisory — Phoenix",
+    "description": "Excessive heat warning issued. Temperatures expected to reach 115°F. Stay hydrated and avoid outdoor activities.",
+    "latitude": 33.4484,
+    "longitude": -112.0740,
+    "timestamp": "2026-03-28T09:30:00Z",
+    "severity": "medium"
+  },
+  {
+    "id": "evt-007",
+    "title": "Air Quality Alert — Delhi",
+    "description": "Poor air quality due to seasonal pollution. Sensitive groups should limit outdoor exposure.",
+    "latitude": 28.6139,
+    "longitude": 77.2090,
+    "timestamp": "2026-03-28T05:00:00Z",
+    "severity": "low"
+  },
+  {
+    "id": "evt-008",
+    "title": "Winter Weather Advisory — Oslo",
+    "description": "Light snow expected overnight. Roads may be slippery during morning commute.",
+    "latitude": 59.9139,
+    "longitude": 10.7522,
+    "timestamp": "2026-03-27T18:00:00Z",
+    "severity": "low"
+  }
+]
