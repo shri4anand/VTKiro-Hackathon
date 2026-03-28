@@ -5,7 +5,7 @@ export type Language = "en" | "es" | "fr" | "zh" | "ar" | "pt";
 export type ReadingLevel = "grade3" | "grade6" | "grade9";
 
 export interface AlertInput {
-  text: string; // 1–5000 chars
+  text: string; // 1–10000 chars
   language: Language;
 }
 

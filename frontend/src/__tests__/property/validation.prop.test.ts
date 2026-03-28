@@ -20,10 +20,10 @@ describe("Property 1: Input length validation", () => {
     );
   });
 
-  it("accepts strings of length 1–5000", () => {
+  it("accepts strings of length 1–10000", () => {
     fc.assert(
       fc.property(
-        fc.string({ minLength: 1, maxLength: 5000 }),
+        fc.string({ minLength: 1, maxLength: 10000 }),
         (text) => {
           const result = validateInput(text);
           expect(result.valid).toBe(true);
@@ -33,10 +33,10 @@ describe("Property 1: Input length validation", () => {
     );
   });
 
-  it("rejects strings of length > 5000 with reason TOO_LONG", () => {
+  it("rejects strings of length > 10000 with reason TOO_LONG", () => {
     fc.assert(
       fc.property(
-        fc.string({ minLength: 5001, maxLength: 10000 }),
+        fc.string({ minLength: 10001, maxLength: 15000 }),
         (text) => {
           const result = validateInput(text);
           expect(result.valid).toBe(false);

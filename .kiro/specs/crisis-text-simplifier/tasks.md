@@ -14,7 +14,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
   - _Requirements: 1.1, 2.1, 3.1, 7.1_
 
 - [x] 2. Input validation and AlertInputPanel
-  - [x] 2.1 Implement `validateInput(text: string)` — accepts 1–5000 chars, rejects empty or over-limit
+  - [x] 2.1 Implement `validateInput(text: string)` — accepts 1–10000 chars, rejects empty or over-limit
     - Return typed result: `{ valid: true }` or `{ valid: false, reason: "EMPTY" | "TOO_LONG" }`
     - _Requirements: 1.1, 1.2, 1.3_
 
@@ -22,7 +22,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - **Property 1: Input length validation**
     - **Validates: Requirements 1.1, 1.3**
     - `// Feature: crisis-text-simplifier, Property 1: Input length validation`
-    - Generate strings of random length; assert accept/reject based on 1–5000 bounds
+    - Generate strings of random length; assert accept/reject based on 1–10000 bounds
 
   - [x] 2.3 Build `AlertInputPanel` component
     - Textarea with live character counter, inline validation messages, disabled submit when over limit
@@ -30,7 +30,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - _Requirements: 1.1, 1.2, 1.3, 5.1, 5.2, 5.3_
 
   - [x] 2.4 Write unit tests for AlertInputPanel
-    - Empty submit shows validation message; 5000-char input accepted; 5001-char input rejected and button disabled
+    - Empty submit shows validation message; 10000-char input accepted; 10001-char input rejected and button disabled
     - _Requirements: 1.2, 1.3_
 
 - [x] 3. LanguageToggle and ReadingLevelSelector components
@@ -40,7 +40,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
   - _Requirements: 3.1, 3.2, 5.3_
 
 - [ ] 4. Backend POST /api/simplify endpoint
-  - [x] 4.1 Implement request validation — reject if text empty, > 5000 chars, or language invalid; return `VALIDATION_ERROR`
+  - [x] 4.1 Implement request validation — reject if text empty, > 10000 chars, or language invalid; return `VALIDATION_ERROR`
     - _Requirements: 1.1, 1.3_
 
   - [x] 4.2 Implement LLM prompt builder and caller

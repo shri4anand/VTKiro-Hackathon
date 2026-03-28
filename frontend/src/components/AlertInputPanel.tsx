@@ -8,7 +8,7 @@ interface AlertInputPanelProps {
   isLoading: boolean;
 }
 
-const MAX_CHARS = 5000;
+const MAX_CHARS = 10000;
 
 export function AlertInputPanel({
   inputText,

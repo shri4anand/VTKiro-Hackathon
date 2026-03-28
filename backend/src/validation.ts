@@ -15,8 +15,8 @@ export function validateSimplifyRequest(body: unknown):
     return { valid: false, error: "Text is required.", code: "VALIDATION_ERROR" };
   }
 
-  if (text.length > 5000) {
-    return { valid: false, error: "Text exceeds 5,000 character limit.", code: "VALIDATION_ERROR" };
+  if (text.length > 10000) {
+    return { valid: false, error: "Text exceeds 10,000 character limit.", code: "VALIDATION_ERROR" };
   }
 
   if (typeof language !== "string" || !(VALID_LANGUAGES as string[]).includes(language)) {
