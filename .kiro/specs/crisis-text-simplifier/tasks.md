@@ -142,7 +142,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - On TTS error, show "Audio unavailable for this variant." on the affected card
     - _Requirements: 4.1, 4.2, 4.4, 4.5_
 
-  - [ ] 7.2 Add `AudioControls` to each `SimplifiedCard`
+  - [x] 7.2 Add `AudioControls` to each `SimplifiedCard`
     - Play button with ARIA label; stop button; playing indicator shown when `playingLevel === card.level`
     - _Requirements: 4.1, 4.3, 5.3_
 
