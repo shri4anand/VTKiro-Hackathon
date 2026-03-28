@@ -11,6 +11,7 @@ type Action =
   | { type: "SET_VARIANTS"; payload: SimplifiedVariant[] | null }
   | { type: "SET_ERROR"; payload: AppError | null }
   | { type: "SET_PLAYING_LEVEL"; payload: ReadingLevel | null }
+  | { type: "SET_LAST_PLAYED_LEVEL"; payload: ReadingLevel | null }
   | { type: "SET_FEED_ITEMS"; payload: FeedItem[] }
   | { type: "SET_IS_POLLING"; payload: boolean }
   | { type: "SET_FEED_ERROR"; payload: FeedError | null };
@@ -25,6 +26,7 @@ const initialState: AppState = {
   variants: null,
   error: null,
   playingLevel: null,
+  lastPlayedLevel: null,
   feed: {
     items: [],
     isPolling: false,
@@ -50,6 +52,8 @@ function appReducer(state: AppState, action: Action): AppState {
       return { ...state, error: action.payload };
     case "SET_PLAYING_LEVEL":
       return { ...state, playingLevel: action.payload };
+    case "SET_LAST_PLAYED_LEVEL":
+      return { ...state, lastPlayedLevel: action.payload };
     case "SET_FEED_ITEMS":
       return { ...state, feed: { ...state.feed, items: action.payload } };
     case "SET_IS_POLLING":

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AppStateProvider, useAppState, useAppDispatch } from "./store/appState";
 import { AlertInputPanel } from "./components/AlertInputPanel";
 import { LanguageToggle } from "./components/LanguageToggle";
@@ -12,7 +12,10 @@ function AppContent() {
   const state = useAppState();
   const dispatch = useAppDispatch();
   const { simplify } = useSimplify();
-  const { stop, isAvailable } = useTTS();
+  const { play, stop, skip, setSpeed, speed, isAvailable } = useTTS();
+  const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+
+  const speedOptions = [0.5, 1.0, 2.0];
 
   const handleLanguageChange = (newLanguage: typeof state.language) => {
     dispatch({ type: "SET_LANGUAGE", payload: newLanguage });
@@ -26,13 +29,22 @@ function AppContent() {
     simplify();
   };
 
+  const handlePlayPause = () => {
+    if (state.playingLevel) {
+      stop();
+    } else if (state.lastPlayedLevel) {
+      const variant = state.variants?.find(v => v.level === state.lastPlayedLevel);
+      if (variant) {
+        play(variant.text, state.language, state.lastPlayedLevel);
+      }
+    }
+  };
+
   useEffect(() => {
     if (state.inputText && state.variants && state.variants.length > 0) {
       simplify();
     }
   }, [state.language]);
-
-  const currentPlayingVariant = state.variants?.find(v => v.level === state.playingLevel);
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-background overflow-x-hidden">
@@ -92,39 +104,77 @@ function AppContent() {
         </main>
 
         {/* Floating Audio Player */}
-        {state.playingLevel && currentPlayingVariant && isAvailable && (
+        {state.lastPlayedLevel && state.variants && isAvailable && (
           <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[500px] z-50">
             <div className="bg-surface/70 backdrop-blur-xl border border-white/20 shadow-2xl rounded-full px-6 py-3 flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <button 
-                  onClick={stop}
+                  onClick={handlePlayPause}
                   className={`size-10 rounded-full flex items-center justify-center hover:scale-105 transition-transform ${
-                    state.playingLevel === "grade3" ? "bg-primary text-on-primary" :
-                    state.playingLevel === "grade6" ? "bg-tertiary text-on-tertiary" :
+                    state.lastPlayedLevel === "grade3" ? "bg-primary text-on-primary" :
+                    state.lastPlayedLevel === "grade6" ? "bg-tertiary text-on-tertiary" :
                     "bg-secondary text-on-secondary"
                   }`}
                 >
-                  <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>pause</span>
+                  <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>
+                    {state.playingLevel ? "pause" : "play_arrow"}
+                  </span>
                 </button>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-tighter text-on-surface-variant leading-none mb-1">Now Reading</p>
                   <p className={`text-xs font-bold leading-none ${
-                    state.playingLevel === "grade3" ? "text-primary" :
-                    state.playingLevel === "grade6" ? "text-tertiary" :
+                    state.lastPlayedLevel === "grade3" ? "text-primary" :
+                    state.lastPlayedLevel === "grade6" ? "text-tertiary" :
                     "text-secondary"
                   }`}>
-                    {state.playingLevel === "grade3" && "Beginner"}
-                    {state.playingLevel === "grade6" && "Intermediate"}
-                    {state.playingLevel === "grade9" && "Comprehensive"}
+                    {state.lastPlayedLevel === "grade3" && "Beginner"}
+                    {state.lastPlayedLevel === "grade6" && "Intermediate"}
+                    {state.lastPlayedLevel === "grade9" && "Comprehensive"}
                   </p>
                 </div>
               </div>
               <div className="h-8 w-[1px] bg-outline-variant/30"></div>
               <div className="flex items-center gap-4">
-                <button className="material-symbols-outlined text-on-surface hover:text-primary transition-colors">fast_rewind</button>
-                <button className="material-symbols-outlined text-on-surface hover:text-primary transition-colors">fast_forward</button>
-                <div className="relative group">
-                  <button className="flex items-center gap-1 bg-surface-container-highest px-3 py-1.5 rounded-full text-xs font-bold">1.0x</button>
+                <button 
+                  onClick={() => skip(-10)}
+                  aria-label="Rewind 10 seconds"
+                  className="material-symbols-outlined text-on-surface hover:text-primary transition-colors"
+                >
+                  fast_rewind
+                </button>
+                <button 
+                  onClick={() => skip(10)}
+                  aria-label="Forward 10 seconds"
+                  className="material-symbols-outlined text-on-surface hover:text-primary transition-colors"
+                >
+                  fast_forward
+                </button>
+                <div className="relative">
+                  <button 
+                    onClick={() => setShowSpeedMenu(!showSpeedMenu)}
+                    className="flex items-center gap-1 bg-surface-container-highest px-3 py-1.5 rounded-full text-xs font-bold hover:bg-surface-variant transition-colors"
+                    aria-label="Playback speed"
+                  >
+                    {speed}x
+                  </button>
+                  {showSpeedMenu && (
+                    <div className="absolute bottom-full mb-2 right-0 bg-surface-container rounded-xl shadow-lg border border-outline-variant overflow-hidden">
+                      {speedOptions.map((option) => (
+                        <button
+                          key={option}
+                          onClick={() => {
+                            setSpeed(option);
+                            setShowSpeedMenu(false);
+                          }}
+                          className={`block w-full px-4 py-2 text-xs font-bold text-left hover:bg-surface-variant transition-colors ${
+                            speed === option ? "bg-surface-variant text-primary" : "text-on-surface"
+                          }`}
+                        >
+                          {option}x
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

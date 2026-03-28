@@ -54,6 +54,7 @@ export interface AppState {
   variants: SimplifiedVariant[] | null;
   error: AppError | null;
   playingLevel: ReadingLevel | null;
+  lastPlayedLevel: ReadingLevel | null;
   feed: {
     items: FeedItem[];
     isPolling: boolean;
