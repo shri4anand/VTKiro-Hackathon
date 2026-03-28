@@ -110,7 +110,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
 
   - [x] 6.6 Write property test for language update (Property 6)
     - **Property 6: Language selection updates all displayed variants**
-    - **Validates: Requirements 3.2, 3.4**
+    - **Validates: Requirements 3.2, 3.4** 
     - `// Feature: crisis-text-simplifier, Property 6: Language selection updates all displayed variants`
     - Generate language selections; assert all rendered cards reflect selected language
 
@@ -257,7 +257,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Initial mount triggers poll; successful poll prepends items; failed poll shows non-blocking banner without clearing items; reading level change re-renders all Feed_Items
     - _Requirements: 7.1, 7.4, 7.6, 7.7_
 
-- [ ] 11. Final checkpoint — Ensure all tests pass
+- [x] 11. Final checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
