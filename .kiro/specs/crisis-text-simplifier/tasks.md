@@ -281,20 +281,20 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Add optional `latitude?: number` and `longitude?: number` fields to the existing `FeedItem` interface
     - _Requirements: 9.2, 10.2, 12.1_
 
-  - [ ]* 12.4 Write property test for MapEvent required fields (Property 25)
+  - [x] 12.4 Write property test for MapEvent required fields (Property 25)
     - **Property 25: MapEvent records contain all required fields**
     - **Validates: Requirements 10.2**
     - `// Feature: crisis-text-simplifier, Property 25: MapEvent records contain all required fields`
     - Generate MapEvent records from the dataset loader; assert each record has all seven required fields with non-null values
 
-- [ ] 13. Implement map hooks
-  - [ ] 13.1 Implement `useMapEvents` hook in `frontend/src/hooks/useMapEvents.ts`
+- [x] 13. Implement map hooks
+  - [x] 13.1 Implement `useMapEvents` hook in `frontend/src/hooks/useMapEvents.ts`
     - Fetch `/data/map-events.json` on mount; store result in local `events` state
     - On fetch error, set `error` string and return empty `events` array so map renders without markers
     - Export `{ events: MapEvent[], loading: boolean, error: string | null }`
     - _Requirements: 10.1, 10.4_
 
-  - [ ] 13.2 Implement `useMapState` hook in `frontend/src/hooks/useMapState.ts`
+  - [x] 13.2 Implement `useMapState` hook in `frontend/src/hooks/useMapState.ts`
     - Manage `selectedEventId: string | null` in local state
     - `selectEvent(id)`: set `selectedEventId` and call `history.replaceState` to write `#event=<id>`
     - `dismissEvent()`: clear `selectedEventId` and remove the hash from the URL
