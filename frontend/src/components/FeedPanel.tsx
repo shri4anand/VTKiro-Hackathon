@@ -60,7 +60,10 @@ export function FeedPanel() {
 
   return (
     <section className="mt-8" aria-label="Crisis news feed">
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">Crisis Feed</h2>
+      <h2 className="text-2xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+        <span className="w-1 h-8 bg-gradient-to-b from-warm-500 to-warm-600 rounded-full"></span>
+        Crisis Feed
+      </h2>
 
       <FeedStatusBar
         isPolling={state.feed.isPolling}
@@ -69,7 +72,7 @@ export function FeedPanel() {
 
       <div className="mt-6 space-y-4">
         {state.feed.items.length === 0 ? (
-          <div className="text-center py-8 text-gray-600">
+          <div className="text-center py-8 text-slate-600">
             <p>No articles available yet. Check back soon.</p>
           </div>
         ) : (

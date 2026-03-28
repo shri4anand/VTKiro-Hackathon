@@ -40,14 +40,17 @@ function AppContent() {
   }, [state.language]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 p-4">
       <StatusRegion />
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          Crisis Text Simplifier
-        </h1>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent mb-2">
+            Crisis Text Simplifier
+          </h1>
+          <p className="text-slate-600 text-sm">Make emergency alerts accessible to everyone</p>
+        </div>
 
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <div className="card-gradient p-6 mb-6">
           <AlertInputPanel
             inputText={state.inputText}
             onChange={handleInputChange}
@@ -56,9 +59,10 @@ function AppContent() {
           />
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">
+        <div className="card-gradient p-6 mb-6">
+          <div className="mb-6 pb-6 border-b border-slate-200">
+            <h2 className="text-lg font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <span className="w-1 h-6 bg-gradient-to-b from-primary-500 to-primary-600 rounded-full"></span>
               Output Language
             </h2>
             <LanguageToggle
@@ -68,7 +72,8 @@ function AppContent() {
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">
+            <h2 className="text-lg font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <span className="w-1 h-6 bg-gradient-to-b from-accent-500 to-accent-600 rounded-full"></span>
               Reading Level
             </h2>
             <ReadingLevelSelector

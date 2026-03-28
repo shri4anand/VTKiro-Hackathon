@@ -46,25 +46,24 @@ export function AlertInputPanel({
           onChange={(e) => onChange(e.target.value)}
           rows={6}
           className={[
-            "w-full rounded-md border p-3 text-sm resize-y",
-            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+            "input-field",
             isOverLimit
-              ? "border-red-500"
-              : "border-gray-300",
+              ? "border-red-500 focus:ring-red-500"
+              : "border-slate-200",
           ].join(" ")}
           placeholder="Paste emergency alert text here…"
         />
 
         <div className="flex items-center justify-between text-sm">
           <span
-            className={isOverLimit ? "text-red-600 font-medium" : "text-gray-500"}
+            className={isOverLimit ? "text-red-600 font-medium" : "text-slate-500"}
           >
             {inputText.length} / {MAX_CHARS.toLocaleString()} characters
           </span>
         </div>
 
         {showError && (
-          <p id="input-error" role="alert" className="text-sm text-red-600">
+          <p id="input-error" role="alert" className="text-sm text-red-600 font-medium">
             {validation.reason === "EMPTY"
               ? "Please enter alert text."
               : "Text exceeds 5,000 character limit."}
@@ -76,11 +75,8 @@ export function AlertInputPanel({
           aria-label="Simplify alert text"
           disabled={isDisabled}
           className={[
-            "self-start rounded-md px-5 py-2 text-sm font-medium text-white transition-colors",
-            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-            isDisabled
-              ? "bg-blue-300 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700 active:bg-blue-800",
+            "btn-primary self-start text-sm",
+            "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2",
           ].join(" ")}
         >
           {isLoading ? "Simplifying…" : "Simplify"}
