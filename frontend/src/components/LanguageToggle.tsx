@@ -16,22 +16,22 @@ interface LanguageToggleProps {
 
 export function LanguageToggle({ language, onChange }: LanguageToggleProps) {
   return (
-    <div role="group" aria-label="Select output language" className="flex flex-wrap gap-2">
-      {LANGUAGES.map(({ code, label }) => (
+    <nav className="hidden md:flex items-center gap-6" role="group" aria-label="Select output language">
+      {LANGUAGES.filter(l => l.code !== "en").map(({ code, label }) => (
         <button
           key={code}
           onClick={() => onChange(code)}
           aria-label={`Select ${label}`}
           aria-pressed={language === code}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 ${
+          className={`text-sm font-semibold transition-colors ${
             language === code
-              ? "bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              ? "text-primary"
+              : "text-on-surface hover:text-primary"
           }`}
         >
           {label}
         </button>
       ))}
-    </div>
+    </nav>
   );
 }

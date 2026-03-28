@@ -13,50 +13,37 @@ export function AudioControls({ variant, language }: AudioControlsProps) {
   const state = useAppState();
   const isPlaying = state.playingLevel === variant.level;
 
-  const levelColors: Record<string, string> = {
-    grade3: "from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700",
-    grade6: "from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700",
-    grade9: "from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700",
-  };
-
-  const colors = levelColors[variant.level] || levelColors.grade6;
-
   if (!isAvailable) {
     return null;
   }
 
   return (
-    <div className="flex items-center gap-2 mt-4">
-      <button
-        onClick={() => play(variant.text, language, variant.level)}
-        disabled={isPlaying}
-        aria-label={`Play audio for ${variant.level} reading level`}
-        className={`px-4 py-2 bg-gradient-to-r ${colors} text-white rounded-lg disabled:from-slate-300 disabled:to-slate-400 disabled:cursor-not-allowed text-sm font-medium transition-all duration-200 active:scale-95`}
-      >
-        {isPlaying ? "Playing..." : "▶ Play"}
-      </button>
-
-      {isPlaying && (
+    <div className="flex items-center gap-2">
+      {isPlaying ? (
         <button
           onClick={stop}
           aria-label={`Stop audio for ${variant.level} reading level`}
-          className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg text-sm font-medium transition-all duration-200 active:scale-95"
+          className="p-3 bg-surface-container rounded-xl text-on-surface hover:bg-primary hover:text-on-primary transition-all group/btn"
         >
-          ⏹ Stop
+          <span className="material-symbols-outlined">volume_up</span>
+        </button>
+      ) : (
+        <button
+          onClick={() => play(variant.text, language, variant.level)}
+          aria-label={`Play audio for ${variant.level} reading level`}
+          className="flex items-center gap-2 px-4 py-2 bg-surface-container rounded-xl text-on-surface font-bold text-sm hover:bg-surface-variant transition-all"
+        >
+          <span className="material-symbols-outlined text-[20px]">play_circle</span>
+          Listen
         </button>
       )}
-
-      {isPlaying && (
-        <span className="text-sm text-slate-600 font-medium animate-pulse">
-          ♪ Playing
-        </span>
-      )}
-
-      {error && (
-        <span className="text-sm text-red-600 font-medium">
-          {error}
-        </span>
-      )}
+      <button 
+        onClick={() => navigator.clipboard.writeText(variant.text)}
+        className="p-2.5 bg-surface-container rounded-xl text-on-surface hover:bg-surface-variant transition-all"
+        aria-label="Copy text"
+      >
+        <span className="material-symbols-outlined text-[20px]">content_copy</span>
+      </button>
     </div>
   );
 }
