@@ -118,7 +118,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Announce `loading` and `success` state transitions to screen readers
     - _Requirements: 5.5, 5.6_
 
-  - [ ] 6.8 Write property test for ARIA live region (Property 12)
+  - [x] 6.8 Write property test for ARIA live region (Property 12)
     - **Property 12: ARIA live region reflects loading and success states**
     - **Validates: Requirements 5.5, 5.6**
     - `// Feature: crisis-text-simplifier, Property 12: ARIA live region reflects loading and success states`
