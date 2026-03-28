@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useAppState, useAppDispatch } from "../store/appState";
 import { FeedResponse, FeedError } from "../types";
+import { API_BASE_URL } from "../config";
 
 export function useFeedPoller() {
   const state = useAppState();
@@ -12,7 +13,7 @@ export function useFeedPoller() {
     dispatch({ type: "SET_IS_POLLING", payload: true });
 
     try {
-      const response = await fetch("/api/feed");
+      const response = await fetch(`${API_BASE_URL}/api/feed`);
 
       if (!response.ok) {
         const errorData: FeedError = await response.json();

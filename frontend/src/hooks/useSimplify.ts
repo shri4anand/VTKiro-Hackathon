@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useAppState, useAppDispatch } from "../store/appState";
 import { SimplifyResponse, AppError } from "../types";
+import { API_BASE_URL } from "../config";
 
 export function useSimplify() {
   const state = useAppState();
@@ -18,7 +19,7 @@ export function useSimplify() {
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     try {
-      const response = await fetch("/api/simplify", {
+      const response = await fetch(`${API_BASE_URL}/api/simplify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

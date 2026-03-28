@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useAppState, useAppDispatch } from "../store/appState";
 import { FeedStatusBar } from "./FeedStatusBar";
 import { FeedItem } from "./FeedItem";
+import { API_BASE_URL } from "../config";
 
 const POLL_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
@@ -13,7 +14,7 @@ export function FeedPanel() {
     const pollFeed = async () => {
       dispatch({ type: "SET_IS_POLLING", payload: true });
       try {
-        const response = await fetch("/api/feed", {
+        const response = await fetch(`${API_BASE_URL}/api/feed`, {
           signal: AbortSignal.timeout(15000),
         });
 
