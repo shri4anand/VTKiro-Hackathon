@@ -247,13 +247,13 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 18: Polling indicator is shown during active poll`
     - Generate feed states with `isPolling=true`; assert polling indicator element is present
 
-  - [ ] 10.8 Write property test for feed error preservation (Property 19)
+  - [x] 10.8 Write property test for feed error preservation (Property 19)
     - **Property 19: Feed items are preserved on polling failure**
     - **Validates: Requirements 7.6**
     - `// Feature: crisis-text-simplifier, Property 19: Feed items are preserved on polling failure`
     - Generate feed states and polling failures; assert feed items unchanged and error banner visible
 
-  - [ ] 10.9 Write unit tests for FeedPanel
+  - [x] 10.9 Write unit tests for FeedPanel
     - Initial mount triggers poll; successful poll prepends items; failed poll shows non-blocking banner without clearing items; reading level change re-renders all Feed_Items
     - _Requirements: 7.1, 7.4, 7.6, 7.7_
 
