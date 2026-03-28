@@ -235,7 +235,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 16: Feed_Items display the active Reading_Level variant`
     - Generate feed states and reading levels; assert each Feed_Item renders the correct variant
 
-  - [ ] 10.6 Write property test for feed prepend (Property 17)
+  - [x] 10.6 Write property test for feed prepend (Property 17)
     - **Property 17: New Feed_Items are prepended without removing existing items**
     - **Validates: Requirements 7.4**
     - `// Feature: crisis-text-simplifier, Property 17: New Feed_Items are prepended without removing existing items`
