@@ -81,7 +81,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 6. Frontend simplification flow and OutputPanel
-  - [ ] 6.1 Implement `useSimplify` hook (or equivalent state logic)
+  - [x] 6.1 Implement `useSimplify` hook (or equivalent state logic)
     - POST to `/api/simplify` with `AbortController` 15-second timeout
     - Manage `status`, `variants`, `error` in `AppState`
     - Preserve `inputText` on any error
