@@ -1,4 +1,4 @@
-import { fetchCrisisArticles, ProcessedArticle } from "./newsapi";
+import { fetchGDACSEvents, ProcessedGDACSArticle } from "./gdacs";
 import { callLLM } from "./llm";
 import { scoreVariants } from "./scorer";
 import { FeedItem, FeedResponse, FeedError } from "./types";
@@ -10,8 +10,8 @@ import { FeedItem, FeedResponse, FeedError } from "./types";
 export async function getFeed(): Promise<
   { success: true; data: FeedResponse } | { success: false; error: FeedError }
 > {
-  // Fetch articles from NewsAPI
-  const articlesResult = await fetchCrisisArticles();
+  // Fetch articles from GDACS
+  const articlesResult = await fetchGDACSEvents();
 
   if (!articlesResult.success) {
     return {
@@ -57,7 +57,7 @@ export async function getFeed(): Promise<
  * Simplify a single article by calling LLM and scoring variants
  */
 async function simplifyArticle(
-  article: ProcessedArticle
+  article: ProcessedGDACSArticle
 ): Promise<
   | { success: true; feedItem: FeedItem }
   | { success: false; error: string; code: "TIMEOUT" | "MALFORMED_RESPONSE" | "NEWS_SOURCE_UNAVAILABLE" }
@@ -86,6 +86,8 @@ async function simplifyArticle(
       source: article.source,
       publishedAt: article.publishedAt,
       variants,
+      latitude: article.latitude,
+      longitude: article.longitude,
     },
   };
 }

@@ -4,7 +4,9 @@
 
 The AI Crisis Text Simplifier is a web application that transforms emergency alert text into accessible formats for users with low literacy, cognitive disabilities, or limited English proficiency. Users paste raw alert text and receive simplified versions at three reading levels, optional translations into five languages, and audio playback of each variant.
 
-The system is scoped to approximately 10 hours of development and uses a React + Tailwind frontend, a lightweight Node.js or Python backend, an LLM for text simplification and translation, and a TTS API for audio.
+The application also provides a geographic situational awareness view: a full-screen interactive map (Mapbox GL JS) that displays crisis events as severity-coded markers, supports deep linking to specific events, integrates with the automated news feed to show geo-tagged articles as map markers, and clusters markers for performance at scale.
+
+The system uses a React + Tailwind frontend, a lightweight Node.js backend, an LLM for text simplification and translation, a TTS API for audio, and Mapbox GL JS for the map.
 
 ### Key Design Decisions
 
@@ -12,6 +14,12 @@ The system is scoped to approximately 10 hours of development and uses a React +
 - LLM handles both simplification and translation in one pass per language, reducing API calls and latency.
 - Client-side TTS via Web Speech API as a zero-cost fallback when a dedicated TTS API is unavailable.
 - Readability scoring runs server-side (e.g. textstat in Python or text-readability in Node) so the frontend stays simple.
+- Map uses Mapbox GL JS with a dark-mode style (`mapbox://styles/mapbox/dark-v11`) as the default tile style.
+- Map dataset is loaded from a static mock JSON file (`/data/map-events.json`) with a schema designed to be drop-in replaceable by a live API response.
+- Deep linking is implemented via URL hash (`#event=<id>`) to avoid full page reloads and keep the implementation simple.
+- Marker clustering uses Mapbox's built-in GeoJSON source clustering (`cluster: true`) to handle 100+ markers without custom logic.
+- Map state (selected event, map view) is managed in a dedicated `useMapState` hook, separate from the main `AppState`, to keep concerns isolated.
+- The keyboard-accessible list view is a separate `MapEventList` component that renders alongside the map and is always present in the DOM for screen readers.
 
 ---
 
@@ -20,7 +28,7 @@ The system is scoped to approximately 10 hours of development and uses a React +
 ```mermaid
 graph TD
     User["User (Browser)"] -->|paste text, select language| UI["React Frontend"]
-    UI -->|POST /api/simplify| API["Backend API (Node/Python)"]
+    UI -->|POST /api/simplify| API["Backend API (Node)"]
     API -->|prompt| LLM["LLM Service (e.g. OpenAI)"]
     LLM -->|3 simplified variants| API
     API -->|score each variant| Scorer["Readability Scorer"]
@@ -36,6 +44,12 @@ graph TD
     API -->|simplify each article| LLM
     API -->|Feed_Items JSON| UI
     UI -->|render| FeedPanel["FeedPanel"]
+
+    UI -->|load on mount| MapData["/data/map-events.json (static)"]
+    MapData -->|MapEvent[]| MapView["MapView (Mapbox GL JS)"]
+    FeedPanel -->|geo-tagged Feed_Items| MapView
+    MapView -->|selected event id| URLHash["URL Hash (#event=id)"]
+    URLHash -->|on load| MapView
 ```
 
 Manual simplification request flow:
@@ -58,6 +72,18 @@ Automated feed flow:
 6. Frontend prepends new items to the feed list; existing items are preserved.
 7. If the request fails, the feed list is unchanged and a non-blocking error banner is shown.
 8. When the user changes Reading_Level, all Feed_Items re-render to show the variant for the new level.
+9. Feed_Items that contain `latitude` and `longitude` fields are forwarded to the MapView as additional markers.
+
+Map flow:
+
+1. On mount, `useMapEvents` fetches `/data/map-events.json` and stores the `MapEvent[]` array in local state.
+2. `MapView` initializes a Mapbox GL JS map with dark style, default center `[0, 20]`, zoom `1.8`.
+3. All `MapEvent` records (plus geo-tagged `FeedItem` records) are added to a single GeoJSON source with `cluster: true` and `clusterMaxZoom: 10`.
+4. Markers are rendered via Mapbox layers; color is driven by a `match` expression on the `severity` property.
+5. On marker click, `useMapState` sets `selectedEventId`; the `EventDetailPanel` renders with the event data.
+6. On selection, the URL hash is updated to `#event=<id>` via `history.replaceState` (no page reload).
+7. On app load, if the URL hash contains a valid event id, the map flies to that event and opens its panel.
+8. On panel dismiss, `selectedEventId` is cleared and the URL hash is removed.
 
 ---
 
@@ -84,16 +110,79 @@ App
 │       ├── ArticleSource
 │       ├── PublishedAt
 │       └── SimplifiedText (shows variant for active Reading_Level)
+├── MapView                          ← NEW
+│   ├── MapContainer (Mapbox GL JS)
+│   ├── EventDetailPanel             ← opens on marker click
+│   │   ├── EventTitle
+│   │   ├── EventDescription
+│   │   ├── EventTimestamp
+│   │   ├── SeverityBadge
+│   │   └── CloseButton
+│   └── MapEventList                 ← keyboard-accessible list view
+│       └── MapEventListItem[]
 └── StatusRegion (ARIA live region for loading/errors)
 ```
 
-`FeedPanel` mounts a `setInterval` (5 minutes) on mount and clears it on unmount. It dispatches `GET /api/feed` on each tick and on initial mount. The `activeLevel` prop (from shared state) controls which variant each `FeedItem` renders.
+#### MapView
+
+Renders the full-screen Mapbox GL JS map. On mount it:
+1. Initializes the map with `style: 'mapbox://styles/mapbox/dark-v11'`, `center: [0, 20]`, `zoom: 1.8`.
+2. Adds a GeoJSON source `crisis-events` with `cluster: true`, `clusterMaxZoom: 10`, `clusterRadius: 50`.
+3. Adds three layers: `clusters` (circle), `cluster-count` (symbol), `unclustered-point` (circle with severity color).
+4. Registers click handlers for marker selection and outside-click for panel dismissal.
+5. Reads the URL hash on mount; if a valid event id is present, flies to that event and opens the panel.
+
+Receives props:
+- `events: MapEvent[]` — static dataset events
+- `feedItems: FeedItem[]` — geo-tagged feed items (merged into the same GeoJSON source)
+- `activeLevel: ReadingLevel` — controls which variant the EventDetailPanel shows for feed-sourced events
+
+#### EventDetailPanel
+
+Rendered inside `MapView` when `selectedEventId` is non-null. On open:
+- Receives focus automatically (`autoFocus` on the panel container).
+- Announces the event title via the shared ARIA live region.
+- Displays: title, description, timestamp (formatted), severity badge.
+- For feed-sourced events, displays the `SimplifiedOutput` at `activeLevel` instead of the raw description.
+- Close button and `Escape` key both dismiss the panel.
+
+#### MapEventList
+
+Always present in the DOM (visually hidden on desktop, visible when toggled or for screen readers). Renders a `<ul>` of all events. Each `<li>` is keyboard-focusable and activates the same selection logic as clicking a marker.
+
+### Frontend Hooks
+
+#### useMapEvents
+
+```typescript
+function useMapEvents(): {
+  events: MapEvent[];
+  loading: boolean;
+  error: string | null;
+}
+```
+
+Fetches `/data/map-events.json` on mount. On error, sets `error` and returns an empty `events` array so the map renders without markers.
+
+#### useMapState
+
+```typescript
+function useMapState(events: MapEvent[]): {
+  selectedEventId: string | null;
+  selectedEvent: MapEvent | null;
+  selectEvent: (id: string) => void;
+  dismissEvent: () => void;
+}
+```
+
+Manages selected event state. `selectEvent` updates `selectedEventId` and calls `history.replaceState` to set `#event=<id>`. `dismissEvent` clears state and removes the hash. On mount, reads the URL hash and calls `selectEvent` if a valid id is found.
 
 ### Backend API
 
 POST /api/simplify
 
 Request:
+
 ```json
 {
   "text": "string (1-5000 chars)",
@@ -102,6 +191,7 @@ Request:
 ```
 
 Response (success):
+
 ```json
 {
   "variants": [
@@ -113,6 +203,7 @@ Response (success):
 ```
 
 Response (error):
+
 ```json
 {
   "error": "string",
@@ -122,7 +213,7 @@ Response (error):
 
 ### LLM Prompt Template
 
-```
+```text
 You are an emergency communications assistant. Rewrite the following alert text at three reading levels.
 Preserve ALL critical safety information: locations, times, and required actions.
 Output language: {language}.
@@ -143,9 +234,11 @@ Alert text:
 Fetches recent crisis and emergency articles from the configured news source, simplifies each one at all three reading levels, and returns an array of `FeedItem` objects.
 
 Query parameters:
+
 - `since` (optional, ISO 8601 timestamp): only return articles published after this time. If omitted, returns the latest batch (up to 20 articles).
 
 Response (success):
+
 ```json
 {
   "items": [
@@ -154,6 +247,8 @@ Response (success):
       "title": "string",
       "source": "string",
       "publishedAt": "ISO 8601 timestamp",
+      "latitude": 37.77,
+      "longitude": -122.41,
       "variants": [
         { "level": "grade3", "text": "...", "fkScore": 3.1 },
         { "level": "grade6", "text": "...", "fkScore": 5.9 },
@@ -166,6 +261,7 @@ Response (success):
 ```
 
 Response (error):
+
 ```json
 {
   "error": "string",
@@ -178,16 +274,19 @@ Response (error):
 The backend integrates with a public news API to retrieve crisis and emergency articles. The recommended source is [NewsAPI](https://newsapi.org/) using the `/v2/everything` endpoint with a query such as `q=emergency OR crisis OR disaster OR evacuation` filtered to the last 24 hours. An RSS fallback (e.g. FEMA, ReliefWeb) can be used if NewsAPI is unavailable or rate-limited.
 
 Key integration details:
+
 - API key stored in an environment variable (`NEWS_API_KEY`), never committed to source.
 - Results are filtered server-side to exclude articles with empty or very short body text (< 50 chars).
 - A maximum of 20 articles are processed per polling cycle to bound LLM cost and latency.
 - Article deduplication is done by `id` (NewsAPI article URL hash) so re-fetched articles are not re-simplified.
+- Geographic coordinates for feed items are extracted from article metadata where available; items without coordinates are still included in the feed but omitted from the map.
 
 ---
 
 ## Data Models
 
 ### AlertInput
+
 ```typescript
 interface AlertInput {
   text: string;       // 1-5000 chars
@@ -196,16 +295,19 @@ interface AlertInput {
 ```
 
 ### Language
+
 ```typescript
 type Language = "en" | "es" | "fr" | "zh" | "ar" | "pt";
 ```
 
 ### ReadingLevel
+
 ```typescript
 type ReadingLevel = "grade3" | "grade6" | "grade9";
 ```
 
 ### SimplifiedVariant
+
 ```typescript
 interface SimplifiedVariant {
   level: ReadingLevel;
@@ -215,6 +317,7 @@ interface SimplifiedVariant {
 ```
 
 ### SimplifyResponse
+
 ```typescript
 interface SimplifyResponse {
   variants: SimplifiedVariant[];
@@ -222,6 +325,7 @@ interface SimplifyResponse {
 ```
 
 ### AppError
+
 ```typescript
 interface AppError {
   error: string;
@@ -230,17 +334,21 @@ interface AppError {
 ```
 
 ### FeedItem
+
 ```typescript
 interface FeedItem {
   id: string;           // unique article identifier (e.g. URL hash)
   title: string;
   source: string;
   publishedAt: string;  // ISO 8601
+  latitude?: number;    // optional — present when article has geographic data
+  longitude?: number;   // optional — present when article has geographic data
   variants: SimplifiedVariant[]; // always grade3, grade6, grade9
 }
 ```
 
 ### FeedResponse
+
 ```typescript
 interface FeedResponse {
   items: FeedItem[];
@@ -249,6 +357,7 @@ interface FeedResponse {
 ```
 
 ### FeedError
+
 ```typescript
 interface FeedError {
   error: string;
@@ -256,7 +365,66 @@ interface FeedError {
 }
 ```
 
+### SeverityLevel
+
+```typescript
+type SeverityLevel = "low" | "medium" | "high" | "critical";
+```
+
+### MapEvent
+
+```typescript
+interface MapEvent {
+  id: string;
+  title: string;
+  description: string;
+  latitude: number;
+  longitude: number;
+  timestamp: string;    // ISO 8601
+  severity: SeverityLevel;
+}
+```
+
+The `MapEvent` schema is intentionally identical to what a live API would return, so swapping the static JSON file for a real endpoint requires no changes to the rendering logic.
+
+### MapState
+
+```typescript
+interface MapState {
+  selectedEventId: string | null;
+  events: MapEvent[];
+  loading: boolean;
+  error: string | null;
+}
+```
+
+### Mock Dataset Schema (`/data/map-events.json`)
+
+```json
+[
+  {
+    "id": "evt-001",
+    "title": "Wildfire — Northern California",
+    "description": "A fast-moving wildfire has prompted evacuation orders for three counties.",
+    "latitude": 39.5,
+    "longitude": -121.8,
+    "timestamp": "2024-07-15T14:30:00Z",
+    "severity": "critical"
+  }
+]
+```
+
+### Severity Color Mapping
+
+| Severity | Color | Hex |
+| --- | --- | --- |
+| low | green | `#22c55e` |
+| medium | yellow | `#eab308` |
+| high | orange | `#f97316` |
+| critical | red | `#ef4444` |
+
 ### UI State
+
 ```typescript
 interface AppState {
   inputText: string;
@@ -271,6 +439,8 @@ interface AppState {
     isPolling: boolean;
     feedError: FeedError | null;
   };
+  // Map state is managed separately in useMapState hook, not in AppState,
+  // to keep the global reducer focused on the simplifier/feed concerns.
 }
 ```
 
@@ -400,47 +570,138 @@ interface AppState {
 
 **Validates: Requirements 7.8**
 
+### Property 21: Every Map_Event has a corresponding marker
+
+*For any* array of `MapEvent` records passed to the map, the GeoJSON source should contain a feature for every event — i.e., the feature count should equal the number of events.
+
+**Validates: Requirements 9.1**
+
+### Property 22: Marker color matches severity level
+
+*For any* `MapEvent` with any `SeverityLevel`, the color value derived by the severity-to-color mapping function should equal the defined color for that level (green for low, yellow for medium, orange for high, red for critical).
+
+**Validates: Requirements 9.2**
+
+### Property 23: Marker click opens panel; dismiss closes it
+
+*For any* `MapEvent`, clicking its marker should set `selectedEventId` to that event's id and render the `EventDetailPanel`. Dismissing the panel (close button or outside click) should set `selectedEventId` to null and remove the panel from the DOM.
+
+**Validates: Requirements 9.3, 9.5**
+
+### Property 24: Event detail panel contains all required fields
+
+*For any* `MapEvent`, when the `EventDetailPanel` is rendered for that event, the rendered output should contain the event's title, description, timestamp, and severity level.
+
+**Validates: Requirements 9.4**
+
+### Property 25: MapEvent records contain all required fields
+
+*For any* record in the loaded `Map_Dataset`, it should have non-null values for `id`, `title`, `description`, `latitude`, `longitude`, `timestamp`, and `severity`.
+
+**Validates: Requirements 10.2**
+
+### Property 26: Deep link round-trip
+
+*For any* valid `MapEvent` id, encoding that id in the URL hash and then reading the URL hash should produce the same id — and loading the app with that URL should result in `selectedEventId` equaling the original id.
+
+**Validates: Requirements 11.2, 11.5**
+
+### Property 27: Panel dismiss clears URL hash
+
+*For any* app state where `selectedEventId` is non-null, dismissing the `EventDetailPanel` should result in the URL hash no longer containing an event id.
+
+**Validates: Requirements 11.4**
+
+### Property 28: Geo-tagged Feed_Items appear as map markers
+
+*For any* `FeedItem` that has both `latitude` and `longitude` fields, the map's GeoJSON source should contain a feature for that item after the feed updates.
+
+**Validates: Requirements 12.1**
+
+### Property 29: Feed_Item panel shows correct reading level variant
+
+*For any* `FeedItem` marker that is selected and any active `ReadingLevel`, the `EventDetailPanel` should display the `SimplifiedOutput` text corresponding to that reading level.
+
+**Validates: Requirements 12.2, 12.4**
+
+### Property 30: New geo-tagged Feed_Items add markers without removing existing ones
+
+*For any* existing set of map markers of size N and any new polling batch containing M geo-tagged Feed_Items, after the poll completes the total marker count should be N + M.
+
+**Validates: Requirements 12.3**
+
+### Property 31: Map event list contains all events
+
+*For any* array of `MapEvent` records, the `MapEventList` component should render exactly as many list items as there are events in the array.
+
+**Validates: Requirements 14.1**
+
+### Property 32: Event detail panel has ARIA label and announces title on open
+
+*For any* `MapEvent`, when the `EventDetailPanel` is rendered for that event, the panel element should have a non-empty `aria-label` attribute, and the ARIA live region should contain the event's title.
+
+**Validates: Requirements 14.4, 14.5**
+
 ---
 
 ## Error Handling
 
 ### Input Validation Errors (client-side)
+
 - Empty input: show inline message "Please enter alert text." Focus remains on textarea.
 - Over 5000 chars: show inline character count message "Text exceeds 5,000 character limit." Submit button is disabled.
 
 ### API / Network Errors
 
 | Error Code | User-Facing Message | UI Action |
-|---|---|---|
+| --- | --- | --- |
 | LLM_UNAVAILABLE | "The simplification service is currently unavailable. Please try again." | Show retry button |
 | TIMEOUT | "The request timed out. Please try again." | Show retry button |
 | MALFORMED_RESPONSE | "Something went wrong. Please try again." | Show retry button; log details to console |
 | VALIDATION_ERROR | "Invalid input. Please check your text and try again." | Highlight input field |
 
 ### TTS Errors
+
 - If TTS fails: show inline message on the affected card: "Audio unavailable for this variant."
 - If Web Speech API is not available in the browser, the play button is hidden and a static note is shown.
 
 ### Timeout Handling
+
 - Frontend sets a 15-second AbortController timeout on the fetch call.
 - On abort, dispatch TIMEOUT error and preserve inputText.
 
 ### Error State Preservation
+
 - On any error, inputText is never cleared.
 - Previously successful variants are retained in state so the user can still see prior output.
 
 ### Feed Errors
 
 | Error Code | User-Facing Message | UI Action |
-|---|---|---|
+| --- | --- | --- |
 | NEWS_SOURCE_UNAVAILABLE | "Could not refresh the feed. Will retry in 5 minutes." | Non-blocking banner; existing items retained |
 | TIMEOUT | "Feed refresh timed out. Will retry in 5 minutes." | Non-blocking banner; existing items retained |
 | MALFORMED_RESPONSE | "Feed refresh failed. Will retry in 5 minutes." | Non-blocking banner; log details to console |
 
 Feed error handling rules:
+
 - Feed errors are always non-blocking: they never replace or clear existing Feed_Items.
 - The error banner auto-dismisses after 10 seconds or when the next successful poll completes.
 - The polling interval continues regardless of errors; the next tick will attempt another fetch.
+
+### Map Errors
+
+| Scenario | User-Facing Message | UI Action |
+| --- | --- | --- |
+| Map_Dataset fails to load | "Could not load event data." | Non-blocking banner; map renders without markers |
+| Deep link id not found | "Event not found." | Non-blocking banner; map loads normally, no event selected |
+| Mapbox token missing/invalid | "Map unavailable." | Map container replaced with a static fallback message |
+
+Map error handling rules:
+
+- Map errors are always non-blocking and never affect the simplifier or feed panels.
+- If the dataset fails to load, `useMapEvents` returns an empty array and sets `error`; `MapView` renders the error banner and an empty map.
+- Deep link errors are surfaced as a dismissible toast; the map initializes to the default view.
 
 ---
 
@@ -476,7 +737,7 @@ Each test must include a comment tag in the format:
 Property test mapping:
 
 | Property | Test Description |
-|---|---|
+| --- | --- |
 | P1 | Generate strings of random length; assert accept/reject based on length bounds |
 | P2 | Generate valid strings; assert simplifier mock called with exact input |
 | P3 | Generate valid inputs; assert response has exactly 3 variants with correct level keys |
@@ -497,10 +758,22 @@ Property test mapping:
 | P18 | Generate feed states with isPolling=true; assert polling indicator is present in rendered output |
 | P19 | Generate feed states and polling failures; assert feed items unchanged and error banner visible |
 | P20 | Generate Feed_Items via feed pipeline; assert all variant fkScores satisfy level-specific bounds |
+| P21 | Generate arrays of MapEvent records; assert GeoJSON source feature count equals event count |
+| P22 | Generate MapEvent records with random severity; assert severity-to-color mapping returns correct hex for each level |
+| P23 | Generate MapEvent records; simulate marker click and assert selectedEventId is set; simulate dismiss and assert it is null |
+| P24 | Generate MapEvent records; render EventDetailPanel and assert title, description, timestamp, and severity are all present |
+| P25 | Generate MapEvent records from the dataset loader; assert each record has all seven required fields with non-null values |
+| P26 | Generate valid MapEvent ids; encode in URL hash, read back, assert round-trip equality and correct selectedEventId on load |
+| P27 | Generate selected event states; simulate panel dismiss and assert URL hash no longer contains event id |
+| P28 | Generate FeedItem records with latitude/longitude; assert each produces a GeoJSON feature in the map source |
+| P29 | Generate FeedItem marker selections and reading levels; assert EventDetailPanel shows the variant for the active level |
+| P30 | Generate existing marker sets and new geo-tagged FeedItem batches; assert total marker count equals sum of both |
+| P31 | Generate MapEvent arrays; render MapEventList and assert list item count equals event array length |
+| P32 | Generate MapEvent records; render EventDetailPanel and assert aria-label is non-empty and ARIA live region contains event title |
 
 ### Test File Structure
 
-```
+```text
 src/
   __tests__/
     unit/
@@ -510,6 +783,7 @@ src/
       tts.test.ts
       errorHandling.test.ts
       feed.test.ts
+      map.test.ts
     property/
       validation.prop.test.ts
       simplifier.prop.test.ts
@@ -517,4 +791,8 @@ src/
       tts.prop.test.ts
       errorHandling.prop.test.ts
       feed.prop.test.ts
+      map.prop.test.ts
+public/
+  data/
+    map-events.json
 ```
