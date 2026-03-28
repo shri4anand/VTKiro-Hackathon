@@ -223,7 +223,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - When user changes `ReadingLevelSelector`, all `FeedItem` components re-render to show the correct variant
     - _Requirements: 7.3, 7.7_
 
-  - [ ] 10.4 Write property test for polling interval (Property 14)
+  - [x] 10.4 Write property test for polling interval (Property 14)
     - **Property 14: Feed polling fires on the correct interval**
     - **Validates: Requirements 7.1**
     - `// Feature: crisis-text-simplifier, Property 14: Feed polling fires on the correct interval`
