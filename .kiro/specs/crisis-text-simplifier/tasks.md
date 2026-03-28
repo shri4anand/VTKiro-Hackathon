@@ -77,7 +77,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - LLM unavailable → `LLM_UNAVAILABLE`; timeout → `TIMEOUT`; malformed JSON → `MALFORMED_RESPONSE`; empty text → `VALIDATION_ERROR`
     - _Requirements: 6.1, 6.2, 6.4_
 
-- [ ] 5. Checkpoint — Ensure all backend simplify tests pass
+- [x] 5. Checkpoint — Ensure all backend simplify tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 6. Frontend simplification flow and OutputPanel
