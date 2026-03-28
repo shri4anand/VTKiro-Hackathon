@@ -87,7 +87,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Preserve `inputText` on any error
     - _Requirements: 1.4, 2.4, 6.2, 6.3_
 
-  - [ ] 6.2 Write property test for input preservation on error (Property 13)
+  - [x] 6.2 Write property test for input preservation on error (Property 13)
     - **Property 13: Alert input is preserved on any error**
     - **Validates: Requirements 6.3**
     - `// Feature: crisis-text-simplifier, Property 13: Alert input is preserved on any error`
