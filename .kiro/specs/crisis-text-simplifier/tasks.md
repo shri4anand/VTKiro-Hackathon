@@ -229,7 +229,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 14: Feed polling fires on the correct interval`
     - Generate elapsed time intervals; assert poll function call count matches interval count plus initial mount call
 
-  - [ ] 10.5 Write property test for Feed_Item level rendering (Property 16)
+  - [x] 10.5 Write property test for Feed_Item level rendering (Property 16)
     - **Property 16: Feed_Items display the active Reading_Level variant**
     - **Validates: Requirements 7.3, 7.7**
     - `// Feature: crisis-text-simplifier, Property 16: Feed_Items display the active Reading_Level variant`
