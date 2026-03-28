@@ -1,4 +1,3 @@
-import React from "react";
 import { SimplifiedVariant, Language } from "../types";
 import { AudioControls } from "./AudioControls";
 
