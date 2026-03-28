@@ -26,7 +26,7 @@ export function MapView({ events, feedItems, activeLevel, datasetError }: MapVie
   const [mapError, setMapError] = useState<string | null>(null);
 
   const { selectedEventId, selectedEvent, selectEvent, dismissEvent } =
-    useMapState(events);
+    useMapState(events, feedItems);
 
   // Initialize map
   useEffect(() => {
@@ -257,11 +257,17 @@ export function MapView({ events, feedItems, activeLevel, datasetError }: MapVie
     const map = mapRef.current;
     if (!map || !selectedEvent) return;
 
-    map.flyTo({
-      center: [selectedEvent.longitude, selectedEvent.latitude],
-      zoom: 10,
-      essential: true,
-    });
+    // Get coordinates based on event type
+    const latitude = "latitude" in selectedEvent ? selectedEvent.latitude : undefined;
+    const longitude = "longitude" in selectedEvent ? selectedEvent.longitude : undefined;
+
+    if (latitude !== undefined && longitude !== undefined) {
+      map.flyTo({
+        center: [longitude, latitude],
+        zoom: 10,
+        essential: true,
+      });
+    }
   }, [selectedEvent]);
 
   return (

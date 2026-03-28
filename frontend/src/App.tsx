@@ -16,6 +16,9 @@ function AppContent() {
   const dispatch = useAppDispatch();
   const { simplify, status, variants, error } = useSimplify();
   const { events, loading: mapLoading, error: mapError } = useMapEvents();
+  const [isSimplifierFocused, setIsSimplifierFocused] = React.useState(false);
+  const [isSimplifierMinimized, setIsSimplifierMinimized] = React.useState(false);
+  const [isFeedMinimized, setIsFeedMinimized] = React.useState(false);
   
   // Start feed polling
   useFeedPoller();
@@ -59,13 +62,26 @@ function AppContent() {
         datasetError={mapError}
       />
 
-      {/* Simplifier Panel - Overlay */}
-      <div className="absolute top-4 left-4 w-96 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg p-6 z-10">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      {/* Simplifier Panel - Overlay with auto-fade */}
+      <div 
+        className={`absolute top-4 left-4 w-80 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg p-4 z-10 transition-opacity duration-300 ${
+          isSimplifierFocused ? 'opacity-100' : 'opacity-40 hover:opacity-100'
+        }`}
+        onMouseEnter={() => setIsSimplifierFocused(true)}
+        onMouseLeave={() => setIsSimplifierFocused(false)}
+        onFocus={() => setIsSimplifierFocused(true)}
+        onBlur={(e) => {
+          // Only blur if focus is leaving the panel entirely
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            setIsSimplifierFocused(false);
+          }
+        }}
+      >
+        <h1 className="text-xl font-bold text-gray-900 mb-4">
           Crisis Text Simplifier
         </h1>
 
-        <div className="mb-6">
+        <div className="mb-4">
           <AlertInputPanel
             inputText={state.inputText}
             onChange={handleInputChange}
@@ -74,9 +90,9 @@ function AppContent() {
           />
         </div>
 
-        <div className="mb-6">
-          <div className="mb-4">
-            <h2 className="text-sm font-semibold text-gray-900 mb-2">
+        <div className="mb-4">
+          <div className="mb-3">
+            <h2 className="text-xs font-semibold text-gray-900 mb-2">
               Output Language
             </h2>
             <LanguageToggle
@@ -86,7 +102,7 @@ function AppContent() {
           </div>
 
           <div>
-            <h2 className="text-sm font-semibold text-gray-900 mb-2">
+            <h2 className="text-xs font-semibold text-gray-900 mb-2">
               Reading Level
             </h2>
             <ReadingLevelSelector
@@ -100,7 +116,7 @@ function AppContent() {
       </div>
 
       {/* Feed Panel - Overlay */}
-      <div className="absolute top-4 right-4 w-96 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg z-10">
+      <div className="absolute top-4 right-4 w-80 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg z-10">
         <FeedPanel />
       </div>
     </div>

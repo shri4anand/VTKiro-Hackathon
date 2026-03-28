@@ -1,21 +1,28 @@
 import { useState, useEffect, useMemo } from "react";
-import { MapEvent } from "../types";
+import { MapEvent, FeedItem } from "../types";
 
 interface UseMapStateReturn {
   selectedEventId: string | null;
-  selectedEvent: MapEvent | null;
+  selectedEvent: MapEvent | FeedItem | null;
   selectEvent: (id: string) => void;
   dismissEvent: () => void;
 }
 
-export function useMapState(events: MapEvent[]): UseMapStateReturn {
+export function useMapState(events: MapEvent[], feedItems: FeedItem[] = []): UseMapStateReturn {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
-  // Derive selectedEvent from selectedEventId and events array
+  // Derive selectedEvent from selectedEventId, searching both events and feedItems
   const selectedEvent = useMemo(() => {
     if (!selectedEventId) return null;
-    return events.find((event) => event.id === selectedEventId) || null;
-  }, [selectedEventId, events]);
+    
+    // First check MapEvent array
+    const mapEvent = events.find((event) => event.id === selectedEventId);
+    if (mapEvent) return mapEvent;
+    
+    // Then check FeedItem array
+    const feedItem = feedItems.find((item) => item.id === selectedEventId);
+    return feedItem || null;
+  }, [selectedEventId, events, feedItems]);
 
   // Select an event: update state and URL hash
   const selectEvent = (id: string) => {
@@ -39,14 +46,15 @@ export function useMapState(events: MapEvent[]): UseMapStateReturn {
     if (hash.startsWith("#event=")) {
       const eventId = hash.substring(7); // Remove "#event=" prefix
       
-      // Only select if the id exists in events array
-      const eventExists = events.some((event) => event.id === eventId);
+      // Only select if the id exists in events or feedItems array
+      const eventExists = events.some((event) => event.id === eventId) || 
+                          feedItems.some((item) => item.id === eventId);
       if (eventExists) {
         selectEvent(eventId);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount (events dependency handled separately)
+  }, []); // Only run on mount (events/feedItems dependency handled separately)
 
   return {
     selectedEventId,

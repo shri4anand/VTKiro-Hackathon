@@ -302,20 +302,20 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Export `{ selectedEventId, selectedEvent, selectEvent, dismissEvent }`
     - _Requirements: 11.1, 11.2, 11.3, 11.4_
 
-  - [ ]* 13.3 Write property test for deep link round-trip (Property 26)
+  - [x] 13.3 Write property test for deep link round-trip (Property 26)
     - **Property 26: Deep link round-trip**
     - **Validates: Requirements 11.2, 11.5**
     - `// Feature: crisis-text-simplifier, Property 26: Deep link round-trip`
     - Generate valid MapEvent ids; encode in URL hash, read back, assert round-trip equality and correct `selectedEventId` on load
 
-  - [ ]* 13.4 Write property test for panel dismiss clears URL hash (Property 27)
+  - [x] 13.4 Write property test for panel dismiss clears URL hash (Property 27)
     - **Property 27: Panel dismiss clears URL hash**
     - **Validates: Requirements 11.4**
     - `// Feature: crisis-text-simplifier, Property 27: Panel dismiss clears URL hash`
     - Generate selected event states; simulate panel dismiss and assert URL hash no longer contains event id
 
-- [ ] 14. Implement MapView component
-  - [ ] 14.1 Implement `MapView` component in `frontend/src/components/MapView.tsx`
+- [x] 14. Implement MapView component
+  - [x] 14.1 Implement `MapView` component in `frontend/src/components/MapView.tsx`
     - Initialize Mapbox GL JS map with `style: 'mapbox://styles/mapbox/dark-v11'`, `center: [0, 20]`, `zoom: 1.8`
     - Add GeoJSON source `crisis-events` merging `MapEvent[]` and geo-tagged `FeedItem[]`; set `cluster: true`, `clusterMaxZoom: 10`, `clusterRadius: 50`
     - Add three layers: `clusters` (circle), `cluster-count` (symbol), `unclustered-point` (circle with severity color via `match` expression)
@@ -326,32 +326,32 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Props: `events: MapEvent[]`, `feedItems: FeedItem[]`, `activeLevel: ReadingLevel`
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 9.1, 9.2, 9.3, 9.6, 10.3, 10.4, 13.1, 13.2, 13.3_
 
-  - [ ]* 14.2 Write property test for every MapEvent has a marker (Property 21)
+  - [x] 14.2 Write property test for every MapEvent has a marker (Property 21)
     - **Property 21: Every Map_Event has a corresponding marker**
     - **Validates: Requirements 9.1**
     - `// Feature: crisis-text-simplifier, Property 21: Every Map_Event has a corresponding marker`
     - Generate arrays of MapEvent records; assert GeoJSON source feature count equals event count
 
-  - [ ]* 14.3 Write property test for marker color matches severity (Property 22)
+  - [x] 14.3 Write property test for marker color matches severity (Property 22)
     - **Property 22: Marker color matches severity level**
     - **Validates: Requirements 9.2**
     - `// Feature: crisis-text-simplifier, Property 22: Marker color matches severity level`
     - Generate MapEvent records with random severity; assert severity-to-color mapping returns correct hex for each level
 
-  - [ ]* 14.4 Write property test for geo-tagged Feed_Items appear as markers (Property 28)
+  - [x] 14.4 Write property test for geo-tagged Feed_Items appear as markers (Property 28)
     - **Property 28: Geo-tagged Feed_Items appear as map markers**
     - **Validates: Requirements 12.1**
     - `// Feature: crisis-text-simplifier, Property 28: Geo-tagged Feed_Items appear as map markers`
     - Generate FeedItem records with latitude/longitude; assert each produces a GeoJSON feature in the map source
 
-  - [ ]* 14.5 Write property test for new geo-tagged Feed_Items add markers without removing existing (Property 30)
+  - [x] 14.5 Write property test for new geo-tagged Feed_Items add markers without removing existing (Property 30)
     - **Property 30: New geo-tagged Feed_Items add markers without removing existing ones**
     - **Validates: Requirements 12.3**
     - `// Feature: crisis-text-simplifier, Property 30: New geo-tagged Feed_Items add markers without removing existing ones`
     - Generate existing marker sets and new geo-tagged FeedItem batches; assert total marker count equals sum of both
 
-- [ ] 15. Implement EventDetailPanel component
-  - [ ] 15.1 Implement `EventDetailPanel` component in `frontend/src/components/EventDetailPanel.tsx`
+- [x] 15. Implement EventDetailPanel component
+  - [x] 15.1 Implement `EventDetailPanel` component in `frontend/src/components/EventDetailPanel.tsx`
     - Display event `title`, `description`, `timestamp` (formatted), and `severity` badge
     - For feed-sourced events, display `SimplifiedOutput` at `activeLevel` instead of raw description
     - Include close button that calls `dismissEvent`; also dismiss on `Escape` key
@@ -360,75 +360,75 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - Announce event title via the shared ARIA live region on open
     - _Requirements: 9.4, 9.5, 14.3, 14.4, 14.5_
 
-  - [ ]* 15.2 Write property test for marker click opens panel; dismiss closes it (Property 23)
+  - [x] 15.2 Write property test for marker click opens panel; dismiss closes it (Property 23)
     - **Property 23: Marker click opens panel; dismiss closes it**
     - **Validates: Requirements 9.3, 9.5**
     - `// Feature: crisis-text-simplifier, Property 23: Marker click opens panel; dismiss closes it`
     - Generate MapEvent records; simulate marker click and assert `selectedEventId` is set; simulate dismiss and assert it is null
 
-  - [ ]* 15.3 Write property test for event detail panel contains all required fields (Property 24)
+  - [x] 15.3 Write property test for event detail panel contains all required fields (Property 24)
     - **Property 24: Event detail panel contains all required fields**
     - **Validates: Requirements 9.4**
     - `// Feature: crisis-text-simplifier, Property 24: Event detail panel contains all required fields`
     - Generate MapEvent records; render EventDetailPanel and assert title, description, timestamp, and severity are all present
 
-  - [ ]* 15.4 Write property test for Feed_Item panel shows correct reading level variant (Property 29)
+  - [x] 15.4 Write property test for Feed_Item panel shows correct reading level variant (Property 29)
     - **Property 29: Feed_Item panel shows correct reading level variant**
     - **Validates: Requirements 12.2, 12.4**
     - `// Feature: crisis-text-simplifier, Property 29: Feed_Item panel shows correct reading level variant`
     - Generate FeedItem marker selections and reading levels; assert EventDetailPanel shows the variant for the active level
 
-  - [ ]* 15.5 Write property test for EventDetailPanel ARIA label and live region (Property 32)
+  - [x] 15.5 Write property test for EventDetailPanel ARIA label and live region (Property 32)
     - **Property 32: Event detail panel has ARIA label and announces title on open**
     - **Validates: Requirements 14.4, 14.5**
     - `// Feature: crisis-text-simplifier, Property 32: Event detail panel has ARIA label and announces title on open`
     - Generate MapEvent records; render EventDetailPanel and assert `aria-label` is non-empty and ARIA live region contains event title
 
-- [ ] 16. Implement MapEventList component
-  - [ ] 16.1 Implement `MapEventList` component in `frontend/src/components/MapEventList.tsx`
+- [x] 16. Implement MapEventList component
+  - [x] 16.1 Implement `MapEventList` component in `frontend/src/components/MapEventList.tsx`
     - Render a `<ul>` of all events; each `<li>` is keyboard-focusable (`tabIndex={0}`) and activates `selectEvent` on Enter/Space/click
     - Visually hidden on desktop by default (use `sr-only` or equivalent); always present in DOM for screen readers
     - Props: `events: MapEvent[]`, `selectEvent: (id: string) => void`
     - _Requirements: 14.1, 14.2_
 
-  - [ ]* 16.2 Write property test for map event list contains all events (Property 31)
+  - [x] 16.2 Write property test for map event list contains all events (Property 31)
     - **Property 31: Map event list contains all events**
     - **Validates: Requirements 14.1**
     - `// Feature: crisis-text-simplifier, Property 31: Map event list contains all events`
     - Generate MapEvent arrays; render MapEventList and assert list item count equals event array length
 
-- [ ] 17. Integrate MapView into App.tsx and wire feed integration
-  - [ ] 17.1 Integrate `MapView` into `App.tsx`
+- [x] 17. Integrate MapView into App.tsx and wire feed integration
+  - [x] 17.1 Integrate `MapView` into `App.tsx`
     - Import and render `MapView` alongside existing panels
     - Pass `events` from `useMapEvents`, `feedItems` from `appState.feed.items`, and `activeLevel` from `appState.activeLevel`
     - _Requirements: 8.1, 12.1_
 
-  - [ ] 17.2 Update `useFeedPoller` to pass geo-tagged Feed_Items to the map
+  - [x] 17.2 Update `useFeedPoller` to pass geo-tagged Feed_Items to the map
     - Ensure `FeedItem` objects with `latitude` and `longitude` are included in the feed state as-is (no extra transformation needed — `MapView` filters them)
     - _Requirements: 12.1, 12.3_
 
-  - [ ] 17.3 Export `useMapEvents` and `useMapState` from `frontend/src/hooks/index.ts`
+  - [x] 17.3 Export `useMapEvents` and `useMapState` from `frontend/src/hooks/index.ts`
     - _Requirements: 8.1_
 
-- [ ] 18. Write unit tests for map components
-  - [ ] 18.1 Write unit tests for `MapView` in `frontend/src/__tests__/unit/map.test.ts`
+- [x] 18. Write unit tests for map components
+  - [x] 18.1 Write unit tests for `MapView` in `frontend/src/__tests__/unit/map.test.ts`
     - Dataset load failure shows non-blocking error banner and renders map without markers
     - Deep link with valid id flies to event and opens panel
     - Deep link with invalid id shows "Event not found" message and loads map normally
     - _Requirements: 10.4, 11.2, 11.3_
 
-  - [ ] 18.2 Write unit tests for `EventDetailPanel`
+  - [x] 18.2 Write unit tests for `EventDetailPanel`
     - Renders title, description, timestamp, severity badge for a known MapEvent
     - Close button calls `dismissEvent`; Escape key calls `dismissEvent`
     - For a feed-sourced event, displays the correct variant text for the active reading level
     - _Requirements: 9.4, 9.5, 12.2_
 
-  - [ ] 18.3 Write unit tests for `MapEventList`
+  - [x] 18.3 Write unit tests for `MapEventList`
     - Renders correct number of list items for a known event array
     - Keyboard activation (Enter) on a list item calls `selectEvent` with the correct id
     - _Requirements: 14.1, 14.2_
 
-- [ ] 19. Final map checkpoint — Ensure all map tests pass
+- [x] 19. Final map checkpoint — Ensure all map tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes

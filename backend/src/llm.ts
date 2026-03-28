@@ -30,7 +30,7 @@ export async function callLLM(text: string, language: Language): Promise<LLMResu
     .replace("{language}", language)
     .replace("{alert_input}", text);
 
-  const model = process.env.LLM_MODEL ?? "gpt-4o-mini";
+  const model = process.env.LLM_MODEL ?? "gpt-4.1-mini";
   const apiKey = process.env.LLM_API_KEY;
 
   const controller = new AbortController();

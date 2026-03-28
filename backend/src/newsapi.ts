@@ -51,7 +51,7 @@ export async function fetchCrisisArticles(): Promise<
         q: query,
         from,
         sortBy: "publishedAt",
-        pageSize: 20,
+        pageSize: 5, // Reduced from 20 to avoid rate limits
         language: "en",
         apiKey,
       },
