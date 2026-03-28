@@ -5,12 +5,20 @@ import { LanguageToggle } from "./components/LanguageToggle";
 import { ReadingLevelSelector } from "./components/ReadingLevelSelector";
 import { OutputPanel } from "./components/OutputPanel";
 import { StatusRegion } from "./components/StatusRegion";
+import { MapView } from "./components/MapView";
+import { FeedPanel } from "./components/FeedPanel";
 import { useSimplify } from "./hooks/useSimplify";
+import { useMapEvents } from "./hooks/useMapEvents";
+import { useFeedPoller } from "./hooks/useFeedPoller";
 
 function AppContent() {
   const state = useAppState();
   const dispatch = useAppDispatch();
   const { simplify, status, variants, error } = useSimplify();
+  const { events, loading: mapLoading, error: mapError } = useMapEvents();
+  
+  // Start feed polling
+  useFeedPoller();
 
   // Wire language toggle to dispatch SET_LANGUAGE action
   const handleLanguageChange = (newLanguage: typeof state.language) => {
@@ -40,14 +48,24 @@ function AppContent() {
   }, [state.language]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gray-50">
       <StatusRegion />
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
+      
+      {/* Map View - Full Screen */}
+      <MapView
+        events={events}
+        feedItems={state.feed.items}
+        activeLevel={state.activeLevel}
+        datasetError={mapError}
+      />
+
+      {/* Simplifier Panel - Overlay */}
+      <div className="absolute top-4 left-4 w-96 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg p-6 z-10">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6">
           Crisis Text Simplifier
         </h1>
 
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <div className="mb-6">
           <AlertInputPanel
             inputText={state.inputText}
             onChange={handleInputChange}
@@ -56,9 +74,9 @@ function AppContent() {
           />
         </div>
 
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <div className="mb-6">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">
+            <h2 className="text-sm font-semibold text-gray-900 mb-2">
               Output Language
             </h2>
             <LanguageToggle
@@ -68,7 +86,7 @@ function AppContent() {
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">
+            <h2 className="text-sm font-semibold text-gray-900 mb-2">
               Reading Level
             </h2>
             <ReadingLevelSelector
@@ -79,6 +97,11 @@ function AppContent() {
         </div>
 
         <OutputPanel />
+      </div>
+
+      {/* Feed Panel - Overlay */}
+      <div className="absolute top-4 right-4 w-96 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-lg shadow-lg z-10">
+        <FeedPanel />
       </div>
     </div>
   );

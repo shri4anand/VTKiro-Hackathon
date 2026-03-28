@@ -9,6 +9,17 @@ global.fetch = vi.fn();
 describe("App - Language Toggle Integration (Task 6.5)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Mock map events fetch
+    (global.fetch as any).mockImplementation((url: string) => {
+      if (url === "/data/map-events.json") {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [],
+        });
+      }
+      return Promise.reject(new Error(`Unexpected fetch to ${url}`));
+    });
   });
 
   it("should dispatch SET_LANGUAGE when language toggle changes", async () => {
@@ -21,9 +32,17 @@ describe("App - Language Toggle Integration (Task 6.5)", () => {
       ],
     };
 
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-      json: async () => mockResponse,
+    (global.fetch as any).mockImplementation((url: string) => {
+      if (url === "/data/map-events.json") {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [],
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => mockResponse,
+      });
     });
 
     render(<App />);
@@ -33,7 +52,7 @@ describe("App - Language Toggle Integration (Task 6.5)", () => {
     await user.type(textarea, "Test alert");
 
     // Submit
-    const submitButton = screen.getByRole("button", { name: "Simplify" });
+    const submitButton = screen.getByRole("button", { name: "Simplify alert text" });
     await user.click(submitButton);
 
     // Wait for the first simplification to complete
@@ -54,39 +73,36 @@ describe("App - Language Toggle Integration (Task 6.5)", () => {
     expect(englishButton).toHaveAttribute("aria-pressed", "false");
 
     // Verify that a new API call was made with the new language
-    // The fetch should have been called at least twice (initial + language change)
+    // The fetch should have been called at least 3 times (map events + initial simplify + language change)
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledTimes(2);
+      expect(global.fetch).toHaveBeenCalledTimes(3);
     });
 
-    // Verify the second call includes the new language
-    const secondCall = (global.fetch as any).mock.calls[1];
-    const secondCallBody = JSON.parse(secondCall[1].body);
-    expect(secondCallBody.language).toBe("es");
+    // Verify the third call (second simplify call) includes the new language
+    const thirdCall = (global.fetch as any).mock.calls[2];
+    const thirdCallBody = JSON.parse(thirdCall[1].body);
+    expect(thirdCallBody.language).toBe("es");
   });
 
   it("should NOT re-trigger simplify if there are no existing variants", async () => {
     const user = userEvent.setup();
 
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        variants: [
-          { level: "grade3", text: "Simple text", fkScore: 3.2 },
-          { level: "grade6", text: "Medium text", fkScore: 5.8 },
-          { level: "grade9", text: "Complex text", fkScore: 8.4 },
-        ],
-      }),
+    render(<App />);
+
+    // Wait for map events to load
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith("/data/map-events.json");
     });
 
-    render(<App />);
+    const initialCallCount = (global.fetch as any).mock.calls.length;
 
     // Change language without submitting any text
     const spanishButton = screen.getByRole("button", { name: "Select Spanish" });
     await user.click(spanishButton);
 
-    // Verify that NO API call was made (since there are no variants yet)
-    expect(global.fetch).not.toHaveBeenCalled();
+    // Verify that NO additional API call was made (since there are no variants yet)
+    // Only the initial map events call should have been made
+    expect(global.fetch).toHaveBeenCalledTimes(initialCallCount);
   });
 
   it("should preserve previous variants while loading new ones", async () => {
@@ -99,9 +115,17 @@ describe("App - Language Toggle Integration (Task 6.5)", () => {
       ],
     };
 
-    (global.fetch as any).mockResolvedValue({
-      ok: true,
-      json: async () => mockResponse,
+    (global.fetch as any).mockImplementation((url: string) => {
+      if (url === "/data/map-events.json") {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [],
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => mockResponse,
+      });
     });
 
     render(<App />);
@@ -109,7 +133,7 @@ describe("App - Language Toggle Integration (Task 6.5)", () => {
     // Enter text and submit
     const textarea = screen.getByPlaceholderText("Paste emergency alert text here…");
     await user.type(textarea, "Test alert");
-    const submitButton = screen.getByRole("button", { name: "Simplify" });
+    const submitButton = screen.getByRole("button", { name: "Simplify alert text" });
     await user.click(submitButton);
 
     // Wait for first simplification
