@@ -114,23 +114,23 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 6: Language selection updates all displayed variants`
     - Generate language selections; assert all rendered cards reflect selected language
 
-  - [ ] 6.7 Implement ARIA live `StatusRegion` component
+  - [x] 6.7 Implement ARIA live `StatusRegion` component
     - Announce `loading` and `success` state transitions to screen readers
     - _Requirements: 5.5, 5.6_
 
-  - [ ] 6.8 Write property test for ARIA live region (Property 12)
+  - [x] 6.8 Write property test for ARIA live region (Property 12)
     - **Property 12: ARIA live region reflects loading and success states**
     - **Validates: Requirements 5.5, 5.6**
     - `// Feature: crisis-text-simplifier, Property 12: ARIA live region reflects loading and success states`
     - Generate state transitions; assert ARIA live region is non-empty on loading/success
 
-  - [ ] 6.9 Write property test for ARIA labels (Property 11)
+  - [x] 6.9 Write property test for ARIA labels (Property 11)
     - **Property 11: ARIA labels on all interactive controls**
     - **Validates: Requirements 5.3**
     - `// Feature: crisis-text-simplifier, Property 11: ARIA labels on all interactive controls`
     - Generate app states; assert all interactive controls have non-empty `aria-label`
 
-  - [ ] 6.10 Write unit tests for rendering and error handling
+  - [x] 6.10 Write unit tests for rendering and error handling
     - Known alert text → correct output structure; LLM unavailable → retry button; timeout → loading cleared; malformed → generic message
     - Language toggle change → new API call with correct language param
     - _Requirements: 2.2, 3.4, 6.1, 6.2, 6.4_
@@ -207,29 +207,29 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - _Requirements: 7.1, 7.2, 7.6_
 
 - [ ] 10. Frontend FeedPanel with auto-polling
-  - [ ] 10.1 Build `FeedPanel` and `FeedItem` components
+  - [x] 10.1 Build `FeedPanel` and `FeedItem` components
     - Each `FeedItem` shows `title`, `source`, `publishedAt`, and `SimplifiedText` for `activeLevel`
     - `FeedStatusBar` shows polling indicator when `isPolling` is true and error banner on failure
     - _Requirements: 7.3, 7.5, 7.6_
 
-  - [ ] 10.2 Implement `useFeedPoller` hook
+  - [x] 10.2 Implement `useFeedPoller` hook
     - `setInterval` every 300,000 ms; dispatch `GET /api/feed` on mount and each tick
     - On success: prepend new items to feed list, preserve existing items
     - On failure: retain existing items, set `feedError`, show non-blocking banner (auto-dismiss after 10 s)
     - Clear interval on unmount
     - _Requirements: 7.1, 7.4, 7.6_
 
-  - [ ] 10.3 Wire `activeLevel` from shared state into FeedPanel
+  - [x] 10.3 Wire `activeLevel` from shared state into FeedPanel
     - When user changes `ReadingLevelSelector`, all `FeedItem` components re-render to show the correct variant
     - _Requirements: 7.3, 7.7_
 
-  - [ ] 10.4 Write property test for polling interval (Property 14)
+  - [x] 10.4 Write property test for polling interval (Property 14)
     - **Property 14: Feed polling fires on the correct interval**
     - **Validates: Requirements 7.1**
     - `// Feature: crisis-text-simplifier, Property 14: Feed polling fires on the correct interval`
     - Generate elapsed time intervals; assert poll function call count matches interval count plus initial mount call
 
-  - [ ] 10.5 Write property test for Feed_Item level rendering (Property 16)
+  - [x] 10.5 Write property test for Feed_Item level rendering (Property 16)
     - **Property 16: Feed_Items display the active Reading_Level variant**
     - **Validates: Requirements 7.3, 7.7**
     - `// Feature: crisis-text-simplifier, Property 16: Feed_Items display the active Reading_Level variant`
@@ -241,19 +241,19 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 17: New Feed_Items are prepended without removing existing items`
     - Generate existing feed lists and new article batches; assert length is N+M and new items appear first
 
-  - [ ] 10.7 Write property test for polling indicator (Property 18)
+  - [x] 10.7 Write property test for polling indicator (Property 18)
     - **Property 18: Polling indicator is shown during active poll**
     - **Validates: Requirements 7.5**
     - `// Feature: crisis-text-simplifier, Property 18: Polling indicator is shown during active poll`
     - Generate feed states with `isPolling=true`; assert polling indicator element is present
 
-  - [ ] 10.8 Write property test for feed error preservation (Property 19)
+  - [x] 10.8 Write property test for feed error preservation (Property 19)
     - **Property 19: Feed items are preserved on polling failure**
     - **Validates: Requirements 7.6**
     - `// Feature: crisis-text-simplifier, Property 19: Feed items are preserved on polling failure`
     - Generate feed states and polling failures; assert feed items unchanged and error banner visible
 
-  - [ ] 10.9 Write unit tests for FeedPanel
+  - [x] 10.9 Write unit tests for FeedPanel
     - Initial mount triggers poll; successful poll prepends items; failed poll shows non-blocking banner without clearing items; reading level change re-renders all Feed_Items
     - _Requirements: 7.1, 7.4, 7.6, 7.7_
 

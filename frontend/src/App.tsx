@@ -4,6 +4,7 @@ import { AlertInputPanel } from "./components/AlertInputPanel";
 import { LanguageToggle } from "./components/LanguageToggle";
 import { ReadingLevelSelector } from "./components/ReadingLevelSelector";
 import { OutputPanel } from "./components/OutputPanel";
+import { StatusRegion } from "./components/StatusRegion";
 import { useSimplify } from "./hooks/useSimplify";
 
 function AppContent() {
@@ -40,6 +41,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
+      <StatusRegion />
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
           Crisis Text Simplifier
