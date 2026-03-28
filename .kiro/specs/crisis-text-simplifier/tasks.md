@@ -136,7 +136,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - _Requirements: 2.2, 3.4, 6.1, 6.2, 6.4_
 
 - [ ] 7. Audio playback (TTS)
-  - [ ] 7.1 Implement `useTTS` hook using Web Speech API
+  - [x] 7.1 Implement `useTTS` hook using Web Speech API
     - `play(text, language)` sets `playingLevel`; `stop()` clears it
     - If `speechSynthesis` unavailable, hide play buttons and show static note
     - On TTS error, show "Audio unavailable for this variant." on the affected card
