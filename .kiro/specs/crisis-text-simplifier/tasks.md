@@ -241,7 +241,7 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 17: New Feed_Items are prepended without removing existing items`
     - Generate existing feed lists and new article batches; assert length is N+M and new items appear first
 
-  - [ ] 10.7 Write property test for polling indicator (Property 18)
+  - [x] 10.7 Write property test for polling indicator (Property 18)
     - **Property 18: Polling indicator is shown during active poll**
     - **Validates: Requirements 7.5**
     - `// Feature: crisis-text-simplifier, Property 18: Polling indicator is shown during active poll`
