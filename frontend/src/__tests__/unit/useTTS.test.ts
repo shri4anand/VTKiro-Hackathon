@@ -160,4 +160,91 @@ describe("useTTS", () => {
     // but we can verify that cancel was called (which clears it)
     expect(mockCancel).not.toHaveBeenCalled(); // cancel is only called on stop()
   });
+
+  // Requirements 4.3, 4.4, 4.5
+  describe("TTS unit tests for audio playback", () => {
+    it("should activate playing indicator when play is called", () => {
+      const { result } = renderHook(() => useTTS(), { wrapper });
+
+      act(() => {
+        result.current.play("Test text", "en", "grade3");
+      });
+
+      // Simulate onstart to activate the indicator
+      act(() => {
+        if (mockUtterance.onstart) {
+          mockUtterance.onstart.call(mockUtterance, new Event("start"));
+        }
+      });
+
+      expect(mockSpeak).toHaveBeenCalled();
+    });
+
+    it("should clear playing indicator when stop is called", () => {
+      const { result } = renderHook(() => useTTS(), { wrapper });
+
+      act(() => {
+        result.current.play("Test text", "en", "grade3");
+      });
+
+      // Simulate onstart
+      act(() => {
+        if (mockUtterance.onstart) {
+          mockUtterance.onstart.call(mockUtterance, new Event("start"));
+        }
+      });
+
+      act(() => {
+        result.current.stop();
+      });
+
+      expect(mockCancel).toHaveBeenCalled();
+    });
+
+    it("should show audio unavailable message on TTS failure", () => {
+      const { result } = renderHook(() => useTTS(), { wrapper });
+
+      act(() => {
+        result.current.play("Test text", "en", "grade3");
+      });
+
+      // Simulate error event
+      act(() => {
+        if (mockUtterance.onerror) {
+          mockUtterance.onerror.call(mockUtterance, new Event("error") as any);
+        }
+      });
+
+      expect(result.current.error).toBe("Audio unavailable for this variant.");
+    });
+
+    it("should hide play buttons when Web Speech API is absent", () => {
+      delete (global as any).speechSynthesis;
+      const { result } = renderHook(() => useTTS(), { wrapper });
+
+      expect(result.current.isAvailable).toBe(false);
+    });
+
+    it("should handle play when Web Speech API is unavailable gracefully", () => {
+      delete (global as any).speechSynthesis;
+      const { result } = renderHook(() => useTTS(), { wrapper });
+
+      act(() => {
+        result.current.play("Test text", "en", "grade3");
+      });
+
+      expect(mockSpeak).not.toHaveBeenCalled();
+    });
+
+    it("should handle stop when Web Speech API is unavailable gracefully", () => {
+      delete (global as any).speechSynthesis;
+      const { result } = renderHook(() => useTTS(), { wrapper });
+
+      act(() => {
+        result.current.stop();
+      });
+
+      expect(mockCancel).not.toHaveBeenCalled();
+    });
+  });
 });
