@@ -98,16 +98,24 @@ function AppContent() {
               <div className="flex items-center gap-3">
                 <button 
                   onClick={stop}
-                  className="size-10 bg-primary text-on-primary rounded-full flex items-center justify-center hover:scale-105 transition-transform"
+                  className={`size-10 rounded-full flex items-center justify-center hover:scale-105 transition-transform ${
+                    state.playingLevel === "grade3" ? "bg-primary text-on-primary" :
+                    state.playingLevel === "grade6" ? "bg-tertiary text-on-tertiary" :
+                    "bg-secondary text-on-secondary"
+                  }`}
                 >
                   <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>pause</span>
                 </button>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-tighter text-on-surface-variant leading-none mb-1">Now Reading</p>
-                  <p className="text-xs font-bold text-on-surface leading-none">
-                    {state.playingLevel === "grade3" && "Grade 3"}
-                    {state.playingLevel === "grade6" && "Grade 6"}
-                    {state.playingLevel === "grade9" && "Grade 9"}
+                  <p className={`text-xs font-bold leading-none ${
+                    state.playingLevel === "grade3" ? "text-primary" :
+                    state.playingLevel === "grade6" ? "text-tertiary" :
+                    "text-secondary"
+                  }`}>
+                    {state.playingLevel === "grade3" && "Beginner"}
+                    {state.playingLevel === "grade6" && "Intermediate"}
+                    {state.playingLevel === "grade9" && "Comprehensive"}
                   </p>
                 </div>
               </div>
