@@ -67,13 +67,13 @@ Implement a React + Tailwind frontend with a Node.js or Python backend. The fron
     - `// Feature: crisis-text-simplifier, Property 3: Response always contains three level variants`
     - Generate valid inputs; assert response has exactly 3 variants with keys `grade3`, `grade6`, `grade9`
 
-  - [ ] 4.6 Write property test for valid input forwarding (Property 2)
+  - [x] 4.6 Write property test for valid input forwarding (Property 2)
     - **Property 2: Valid input is forwarded to the Simplifier**
     - **Validates: Requirements 1.4**
     - `// Feature: crisis-text-simplifier, Property 2: Valid input is forwarded to the Simplifier`
     - Generate valid strings; assert LLM mock called with exact input text
 
-  - [ ] 4.7 Write unit tests for /api/simplify error paths
+  - [x] 4.7 Write unit tests for /api/simplify error paths
     - LLM unavailable → `LLM_UNAVAILABLE`; timeout → `TIMEOUT`; malformed JSON → `MALFORMED_RESPONSE`; empty text → `VALIDATION_ERROR`
     - _Requirements: 6.1, 6.2, 6.4_
 

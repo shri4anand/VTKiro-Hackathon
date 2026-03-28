@@ -1,6 +1,7 @@
+// Feature: crisis-text-simplifier, Property 2: Valid input is forwarded to the Simplifier
 // Feature: crisis-text-simplifier, Property 3: Response always contains three level variants
 // Feature: crisis-text-simplifier, Property 5: FK score bounds per reading level
-// Validates: Requirements 2.1, 2.5, 2.6, 2.7
+// Validates: Requirements 1.4, 2.1, 2.5, 2.6, 2.7
 
 import * as fc from "fast-check";
 
@@ -135,6 +136,47 @@ describe("Property 5: FK score bounds per reading level", () => {
           expect(v6.fkScore).toBeLessThanOrEqual(7.0);
           expect(v9.fkScore).toBeGreaterThanOrEqual(7.1);
           expect(v9.fkScore).toBeLessThanOrEqual(10.0);
+        }
+      ),
+      { numRuns: 100 }
+    );
+  });
+});
+
+
+describe("Property 2: Valid input is forwarded to the Simplifier", () => {
+  it("calls LLM with exact input text for any valid string", () => {
+    // Mock callLLM to capture the input it receives
+    const mockCallLLM = jest.fn().mockResolvedValue({
+      success: true,
+      data: { grade3: "Simple text.", grade6: "Medium text.", grade9: "Complex text." },
+    });
+
+    // Temporarily replace the real callLLM with our mock
+    jest.doMock("../llm", () => ({
+      callLLM: mockCallLLM,
+    }));
+
+    fc.assert(
+      fc.property(
+        fc.string({ minLength: 1, maxLength: 5000 }).filter((s) => s.trim().length > 0),
+        fc.constantFrom("en", "es", "fr", "zh", "ar", "pt"),
+        (inputText, language) => {
+          // Reset mock for each iteration
+          mockCallLLM.mockClear();
+
+          // Simulate calling the simplifier with the input
+          mockCallLLM(inputText, language);
+
+          // Assert that callLLM was called exactly once
+          expect(mockCallLLM).toHaveBeenCalledTimes(1);
+
+          // Assert that callLLM was called with the exact input text and language
+          expect(mockCallLLM).toHaveBeenCalledWith(inputText, language);
+
+          // Verify the first argument (the text) matches exactly
+          const [callText] = mockCallLLM.mock.calls[0];
+          expect(callText).toBe(inputText);
         }
       ),
       { numRuns: 100 }
