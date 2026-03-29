@@ -1,6 +1,7 @@
 import { useCallback, useRef, useEffect, useState } from "react";
 import { useAppDispatch } from "../store/appState";
 import { Language, ReadingLevel } from "../types";
+import { API_BASE_URL } from "../config";
 
 interface UseTTSReturn {
   play: (text: string, language: Language, level: ReadingLevel) => void;
@@ -13,8 +14,6 @@ interface UseTTSReturn {
   error: string | null;
   isLoading: boolean;
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 // Cache for storing generated audio URLs
 const audioCache = new Map<string, string>();

@@ -1,7 +1,8 @@
 # ClearSignal
 
 ClearSignal is an accessibility-focused crisis communication platform that makes emergency alerts and crisis information understandable for everyone, especially vulnerable populations.
-https://staging.djabbv42qevct.amplifyapp.com/
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fgautamsoni%2FVTKiro-Hackathon&env=LLM_API_KEY,HUME_API_KEY&envDescription=API%20keys%20required%20to%20run%20ClearSignal&envLink=https%3A%2F%2Fgithub.com%2Fgautamsoni%2FVTKiro-Hackathon%2Fblob%2Fmain%2F.env.example&project-name=clearsignal&repository-name=clearsignal)
 
 ## The Problem
 
@@ -26,11 +27,11 @@ Built with keyboard navigation, screen reader support, ARIA labels, and proper c
 
 ## Tech Stack
 
-- **Frontend**: React/TypeScript with Tailwind CSS
-- **Backend**: Node.js
-- **AI**: OpenAI for text simplification
-- **Testing**: Comprehensive property-based testing to ensure correctness
-- **Deployment**: AWS (frontend and backend components)
+- **Frontend**: React/TypeScript with Tailwind CSS, Vite
+- **Backend**: Node.js serverless functions (Vercel)
+- **AI**: OpenAI for text simplification, Hume AI for text-to-speech
+- **Data**: GDACS RSS feed for real-time crisis events
+- **Testing**: Comprehensive property-based testing
 
 ## Team
 
@@ -38,26 +39,70 @@ Built with keyboard navigation, screen reader support, ARIA labels, and proper c
 - Gautam Soni
 - Shriram Anand
 
-## How to Run the App
+## Deploy to Vercel (1-click)
 
-The app has two parts - backend and frontend - that need to run separately:
+Click the **Deploy with Vercel** button above, then add these environment variables when prompted:
 
-### Backend (API server)
+| Variable | Description |
+|----------|-------------|
+| `LLM_API_KEY` | OpenAI API key for text simplification |
+| `LLM_MODEL` | Model to use (optional, defaults to `gpt-5.4-mini`) |
+| `HUME_API_KEY` | Hume AI API key for text-to-speech |
+
+That's it — Vercel builds the frontend and deploys the backend as serverless functions automatically.
+
+## Local Development
+
+Copy the example env file and fill in your keys:
+
+```bash
+cp .env.example .env.local
+```
+
+Then run the backend and frontend in separate terminals:
+
+### Backend (Express API server)
 
 ```bash
 cd backend
-npm install  # if you haven't already
+npm install
 npm run dev
 ```
 
-This starts the backend server on port 3000 (check `backend/src/index.ts` for the exact port).
+This starts the backend on `http://localhost:3001`.
 
 ### Frontend (React app)
 
 ```bash
 cd frontend
-npm install  # if you haven't already
+npm install
 npm run dev
 ```
 
-This starts the Vite dev server, typically on http://localhost:5173.
+This starts the Vite dev server on `http://localhost:5173`. API calls are automatically proxied to the local backend.
+
+## Project Structure
+
+```
+/
+├── api/                  # Vercel serverless functions
+│   ├── feed.ts           # GET  /api/feed
+│   ├── simplify.ts       # POST /api/simplify
+│   ├── health.ts         # GET  /api/health
+│   └── tts/
+│       ├── index.ts      # POST /api/tts
+│       └── debug.ts      # GET  /api/tts/debug
+├── backend/              # Shared backend logic (imported by api/)
+│   └── src/
+│       ├── llm.ts        # OpenAI integration
+│       ├── tts.ts        # Hume AI integration
+│       ├── feed.ts       # Crisis feed aggregation
+│       ├── gdacs.ts      # GDACS RSS parsing
+│       ├── scorer.ts     # Flesch-Kincaid scoring
+│       ├── validation.ts # Request validation
+│       └── types.ts      # Shared TypeScript types
+├── frontend/             # Vite + React SPA
+│   └── src/
+├── vercel.json           # Vercel deployment config
+└── .env.example          # Environment variable reference
+```

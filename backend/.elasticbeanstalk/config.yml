@@ -1,8 +1,0 @@
-branch-defaults:
-  main:
-    environment: crisis-text-api-prod
-global:
-  application_name: crisis-text-simplifier-backend
-  default_platform: Node.js 18
-  default_region: us-east-1
-  sc: git
